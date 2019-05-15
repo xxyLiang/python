@@ -15,8 +15,7 @@
 ```python
 import scrapy
 from scrapy_redis.spiders import RedisSpider
-from copy import deepcopy
-import urllib
+
 
 class DangdangSpider(RedisSpider):  #继承RedisSpider类
     name = 'dangdang'
