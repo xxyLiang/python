@@ -1,40 +1,35 @@
 ## scrapy_redis模块用于防止重复爬取  
->### redis的安装
+>### redis的windows安装
 1. 在cmd里输入  
    `pip3 install scrapy-redis`  
    `easy_install scrapy-redis`
 2. 到网站下载redis客户端：[https://github.com/MicrosoftArchive/redis/releases]
-3. cd到目录，运行redis：`redis-server redis.conf`
+3. cd到目录，运行redis：`redis-server redis.windows.conf`
 4. 其他操作：`redis-cli`，具体百度
   
 下面是一个例子  
-### domz.project
+
 
 # spider.py
 
 ```python
-from scrapy.linkextractors import LinkExtractor
-from scrapy.spiders import CrawlSpider, Rule
+import scrapy
+from scrapy_redis.spiders import RedisSpider
+from copy import deepcopy
+import urllib
 
-class DmozSpider(CrawlSpider):
-    """Follow categories and extract links."""
-    name = 'dmoz'
-    allowed_domains = ['dmoztools.net']
-    start_urls = ['http://dmoztools.net/']
-    
-    rules = [
-        Rule(LinkExtractor(
-            restric_css('.top-cat', '.sub-cat', '.cat-item')
-        ), callback='parse_directory', follow=True),
-    ]
-    
-    def parse_directory(self, response):
-        for div in response.css('.title-and-desc'):
-            yield {
-                'name':div.css('.site-title::text').extract_first()
-                'description':div.css('.site-descr::text').extract_first()
-                'link':div.css('a::attr(href)').extract_first()
-            }
+class DangdangSpider(RedisSpider):  #继承RedisSpider类
+    name = 'dangdang'
+    allowed_domains = ['book.dangdang.com', 'category.dangdang.com']
+    # start_urls = ['http://book.dangdang.com/']
+    redis_key = "dangdang"
+    # 可以看作是一个队列，redis_key是队列标识
+    # 在redis_cli中输入`lpush dangdang http://book.dangdang.com/`
+    # 那么start_url被push入队列，第一台电脑pop操作获得url，有且仅有一台电脑获得url
+
+    def parse(self, response):
+        pass
+
 ```
 
 # settings.py
