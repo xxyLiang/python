@@ -13,6 +13,7 @@ BOT_NAME = 'book'
 
 SPIDER_MODULES = ['book.spiders']
 NEWSPIDER_MODULE = 'book.spiders'
+LOG_LEVEL = 'WARNING'
 
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
@@ -87,9 +88,9 @@ DOWNLOAD_DELAY = 0.2
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'book.pipelines.BookPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'book.pipelines.BookPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

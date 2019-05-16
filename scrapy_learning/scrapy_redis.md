@@ -6,9 +6,20 @@
 2. 到网站下载redis客户端：[https://github.com/MicrosoftArchive/redis/releases]
 3. cd到目录，运行redis：`redis-server redis.windows.conf`
 4. 其他操作：`redis-cli`，具体百度
-  
-下面是一个例子  
 
+`key *` 列出所有变量
+`TYPE variable` 返回变量类型
+`ZCARD zset` 返回zset的成员个数
+`SCARD set` 返回set的成员个数
+`LLEN list` 返回list的成员个数
+`ZRANGE zset 0 -1` 返回zset的所有成员
+`SMEMBER set` 返回set的所有成员
+`LRANGE list 0 -1` 返回list的所有成员
+`DEL variable` 删除变量
+`flushdb` 清空
+
+ 
+下面是一个例子  
 
 # spider.py
 
