@@ -19,7 +19,7 @@ class JdSpider(scrapy.Spider):
         dt_list = response.xpath("//div[@class='mc']/dl/dt")    #大分类列表
         wanted_list = ["小说", "文学", "青春文学", "传记", "励志与成功",
                         "管理", "经济", "金融与投资", "历史", "心理学",
-                        "社会科学", "科普读物", "计算机与互联网"]
+                        "政治/军事", "社会科学", "科普读物", "计算机与互联网", "电子与通信"]
         for dt in dt_list:
             item = {}
             item["b_cate"] = dt.xpath("./a/text()").extract_first()
@@ -35,7 +35,7 @@ class JdSpider(scrapy.Spider):
                 item["s_cate"] = em.xpath("./a/text()").extract_first()
                 if item["s_num"] is not None:
                     item["s_href"] = "https://list.jd.com/list.html?cat=" + item["s_num"] \
-                                     + "&delivery=1&sort=sort_totalsales15_desc"
+                                     + "&delivery=1&sort=sort_rank_asc"
                     yield scrapy.Request(
                         item["s_href"],
                         callback=self.parse_book_list,
@@ -54,7 +54,7 @@ class JdSpider(scrapy.Spider):
             item["book_img"] = "https:" + item["book_img"] if item["book_img"] is not None else None
             item["book_name"] = li.xpath(".//div[@class='p-name']/a/em/text()").extract_first().strip()
             item["book_author"] = li.xpath(".//span[@class='author_type_1']/a/text()").extract()
-            item["book_author"] = ", ".join(item["book_author"])
+            item["book_author"] = "  ".join(item["book_author"])
             item["book_press"] = li.xpath(".//span[@class='p-bi-store']/a/@title").extract_first()
             item["book_id"] = re.findall(re.compile(r'com/(.+)\.html'), item["detail_url"])[0]
             # item["book_id"] = li.xpath("./div/@data-sku").extract_first()
@@ -67,7 +67,7 @@ class JdSpider(scrapy.Spider):
                 meta={"item": deepcopy(item)}
             )
             item["parsed_num"] += 1
-            if item["parsed_num"] >= 50:
+            if item["parsed_num"] >= 100:
                 return
 
         # 列表页翻页
