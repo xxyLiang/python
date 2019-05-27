@@ -22,7 +22,7 @@ class BookPipeline(object):
         self.book_number = 0
 
     def process_item(self, item, spider):
-        sql = "insert into books values('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % \
+        sql = "insert into books values('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', CURRENT_TIMESTAMP)" % \
               (item["book_id"], item["b_cate"], item["s_cate"], item["book_name"], item["book_author"],
                item["book_disc"], item["book_press"], item["book_img"], item["detail_url"], 0)
         try:
