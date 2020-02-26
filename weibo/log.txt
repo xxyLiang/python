@@ -1,0 +1,359 @@
+
+
+警方通报朝阳医院伤医事件
+###################################
+
+
+北京卫健委回应暴力伤医事件
+###################################
+
+
+北京朝阳医院医生被砍伤
+###################################
+
+
+北京警方通报一医院发生伤医事件
+###################################
+
+
+北京警方通报朝阳医院暴力伤医事件
+###################################
+2020-02-18 13:51:47: 2539982284 / Iqu1Ylbzk : (1062, "Duplicate entry '4463119705049362' for key 'weibo_info.PRIMARY'")
+
+
+北大医院妇产科医生被打
+###################################
+
+
+医生陶勇暂无生命危险
+###################################
+
+
+卫健委回应民航总医院伤医案
+###################################
+
+
+同事接替陶勇医生看病
+###################################
+2020-02-18 13:51:54: 5463472460 / IqvfThqBP : (1062, "Duplicate entry '4463166774153865' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:51:54: 2748597475 / IqtEx93SV : (1062, "Duplicate entry '4463105172159889' for key 'weibo_info.PRIMARY'")
+
+
+在朝阳医院行凶犯罪嫌疑人被批准逮捕
+###################################
+
+
+天津武警后勤学院附属医院
+###################################
+
+
+患者给陶勇医生的评价
+###################################
+
+
+朝阳医院伤医事件
+###################################
+2020-02-18 13:52:01: 2803301701 / IqndiF75H : (1062, "Duplicate entry '4462857649798709' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:01: 1644114654 / IqnKHaMjP : (1062, "Duplicate entry '4462878352569021' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:01: 2028810631 / IqtxK3eMc : (1062, "Duplicate entry '4463100960771788' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:01: 2318910945 / IqmOOq6bb : (1062, "Duplicate entry '4462842466220285' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:01: 1951123110 / Iqpthg2KA : (1062, "Duplicate entry '4462944433823824' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:01: 1974576991 / IqovW43qA : (1062, "Duplicate entry '4462907640966492' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:01: 6124642021 / IqpuWDdEh : (1062, "Duplicate entry '4462945469347261' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:01: 5484574029 / IqoZBdjRE : (1062, "Duplicate entry '4462926033174626' for key 'weibo_info.PRIMARY'")
+
+
+朝阳医院眼科主任医生被砍
+###################################
+2020-02-18 13:52:03: 1644114654 / IqnKHaMjP : (1062, "Duplicate entry '4462878352569021' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:03: 1644114654 / IqtrLfqjz : (1062, "Duplicate entry '4463097253676077' for key 'weibo_info.PRIMARY'")
+
+
+朝阳医院眼科大夫被砍
+###################################
+2020-02-18 13:52:05: 1837127137 / IquA4kR4C : (1062, "Duplicate entry '4463140844970578' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:05: 2318910945 / IqmOOq6bb : (1062, "Duplicate entry '4462842466220285' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:05: 1806128454 / IqmOFz7kx : (1062, "Duplicate entry '4462842378369661' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:05: 2318910945 / IqoCCl1AB : (1062, "Duplicate entry '4462911785011001' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:05: 1191965271 / IqyHXwZv5 : (1062, "Duplicate entry '4463299497862907' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:05: 1191965271 / IqmthEdxj : (1062, "Duplicate entry '4462829119585157' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:05: 3270656465 / IqrJjF6Rr : (1062, "Duplicate entry '4463031259797825' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:05: 1644114654 / Iqmvk9xL6 : (1062, "Duplicate entry '4462830382274724' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:05: 5484574029 / IqoZBdjRE : (1062, "Duplicate entry '4462926033174626' for key 'weibo_info.PRIMARY'")
+
+
+杨文医师遗体告别仪式在京举行
+###################################
+
+
+民航总医院内行凶嫌疑人孙文斌被批捕
+###################################
+
+
+民航总医院内行凶犯罪嫌疑人被批准逮捕
+###################################
+2020-02-18 13:52:11: 1686546714 / ImKsVFqXP : (1062, "Duplicate entry '4454218339875101' for key 'weibo_info.PRIMARY'")
+
+
+民航总医院就杨文医生被害事件发布通报
+###################################
+
+
+民航总医院通报杨文医师被害有关情况
+###################################
+2020-02-18 13:52:15: 1381431471 / Inmd9BSSK : (1062, "Duplicate entry '4455669279029106' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:15: 1314608344 / Indlz0fiX : (1062, "Duplicate entry '4455328530058835' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:15: 1726918143 / InhregADi : (1062, "Duplicate entry '4455485803954068' for key 'weibo_info.PRIMARY'")
+
+
+警方通报朝阳医院伤医事件
+###################################
+2020-02-18 13:52:17: 2656274875 / Iqoud9dj1 : (1062, "Duplicate entry '4462906572196103' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 2656274875 / IqndikCkb : (1062, "Duplicate entry '4462857644913883' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 2803301701 / IqndiF75H : (1062, "Duplicate entry '4462857649798709' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 1644114654 / IqnKHaMjP : (1062, "Duplicate entry '4462878352569021' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 1974576991 / IqovW43qA : (1062, "Duplicate entry '4462907640966492' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 1618051664 / IqnfrBpPg : (1062, "Duplicate entry '4462858978917414' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 3210693695 / IqnU5iLMl : (1062, "Duplicate entry '4462884174473569' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 1191965271 / IqmthEdxj : (1062, "Duplicate entry '4462829119585157' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 5484574029 / IqoZBdjRE : (1062, "Duplicate entry '4462926033174626' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 1847123567 / IqnQGATnW : (1062, "Duplicate entry '4462882068792712' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 1644114654 / Iqnfw5qjN : (1062, "Duplicate entry '4462859021292811' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 3937348351 / IqnjvFKUh : (1062, "Duplicate entry '4462861499951761' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 1663072851 / IqnqasQMc : (1062, "Duplicate entry '4462865626876060' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 1642512402 / IqoPmtvCi : (1062, "Duplicate entry '4462919687033050' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 2028810631 / Iqnf5tcmW : (1062, "Duplicate entry '4462858756959062' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 1749990115 / IquWGalFQ : (1062, "Duplicate entry '4463154862466598' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 5347795977 / IqpH7mqq8 : (1062, "Duplicate entry '4462953015344780' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:17: 2286908003 / IqngElfCM : (1062, "Duplicate entry '4462859725064952' for key 'weibo_info.PRIMARY'")
+
+
+陶勇
+###################################
+2020-02-18 13:52:19: 2028810631 / IqtTIgf9U : (1062, "Duplicate entry '4463114583871522' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:19: 1865990891 / IqpCUqfhW : (1062, "Duplicate entry '4462950406255300' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:19: 1837127137 / IquA4kR4C : (1062, "Duplicate entry '4463140844970578' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:19: 1718493627 / IqmRA7tmT : (1062, "Duplicate entry '4462844181781191' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:19: 5214343394 / IqyLLmqBf : (1062, "Duplicate entry '4463301855345469' for key 'weibo_info.PRIMARY'")
+
+
+陶勇医生曾帮患者减免费用
+###################################
+2020-02-18 13:52:21: 2028810631 / IqtTIgf9U : (1062, "Duplicate entry '4463114583871522' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 2028810631 / IqtxK3eMc : (1062, "Duplicate entry '4463100960771788' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 1742944894 / IqtKT0J4u : (1062, "Duplicate entry '4463109110173258' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 1951123110 / Iqpthg2KA : (1062, "Duplicate entry '4462944433823824' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 1618051664 / IqvhKcg3A : (1062, "Duplicate entry '4463167922921662' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 6124642021 / IqpuWDdEh : (1062, "Duplicate entry '4462945469347261' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 2318910945 / Iqufn19IJ : (1062, "Duplicate entry '4463128010275697' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 1191965271 / Iqv2ECEDw : (1062, "Duplicate entry '4463158569212674' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 1806128454 / IqvmE0dNt : (1062, "Duplicate entry '4463170960053039' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 1642512402 / IquUtjhMo : (1062, "Duplicate entry '4463153494596580' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 5463472460 / IqvfThqBP : (1062, "Duplicate entry '4463166774153865' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:21: 1885454921 / IquO7otJp : (1062, "Duplicate entry '4463149555834163' for key 'weibo_info.PRIMARY'")
+
+
+陶勇医生苏醒
+###################################
+2020-02-18 13:52:23: 6384939898 / Ir6aa6Wqa : (1062, "Duplicate entry '4464585501654542' for key 'weibo_info.PRIMARY'")
+2020-02-18 13:52:23: 1726918143 / Irfku13ya : (1062, "Duplicate entry '4464937860251978' for key 'weibo_info.PRIMARY'")
+weibo mid=4454239822849149 get 264 comments
+weibo mid=4454240615826876 get 428 comments
+weibo mid=4454252673801153 get 15 comments
+weibo mid=4454260047584831 get 381 comments
+weibo mid=4454261146961642 get 22 comments
+weibo mid=4454286198672764 get 414 comments
+weibo mid=4454396790826286 get 51 comments
+weibo mid=4454425727210584 get 94 comments
+weibo mid=4454429950471184 get 207 comments
+weibo mid=4454436946912501 get 438 comments
+weibo mid=4454437709944167 get 28 comments
+weibo mid=4454449839409762 get 0 comments
+weibo mid=4454453975968101 get 79 comments
+weibo mid=4454467720644356 get 397 comments
+weibo mid=4454475525263048 get 87 comments
+weibo mid=4454482735503506 get 274 comments
+weibo mid=4454487986902497 get 242 comments
+weibo mid=4454504336056129 get 100 comments
+weibo mid=4454511630203320 get 177 comments
+weibo mid=4454513672692242 get 129 comments
+weibo mid=4454516734521308 get 43 comments
+weibo mid=4454521415166942 get 201 comments
+weibo mid=4454521520599546 get 418 comments
+weibo mid=4454525777340406 get 243 comments
+weibo mid=4454559222903329 get 424 comments
+weibo mid=4454561139930721 get 49 comments
+weibo mid=4454564512326184 get 15 comments
+weibo mid=4454566369748361 get 134 comments
+weibo mid=4454570627557004 get 36 comments
+weibo mid=4454602726221793 get 38 comments
+weibo mid=4454603066430154 get 83 comments
+weibo mid=4454613325197124 get 142 comments
+weibo mid=4454752953518018 get 408 comments
+weibo mid=4454794855044896 get 231 comments
+weibo mid=4455326721805729 get 0 comments
+weibo mid=4455327250294449 get 411 comments
+weibo mid=4455328530058835 get 0 comments
+weibo mid=4455331231413492 get 422 comments
+weibo mid=4455334187928278 get 414 comments
+weibo mid=4455336964346382 get 61 comments
+weibo mid=4455339565424985 get 130 comments
+weibo mid=4455360255783402 get 30 comments
+weibo mid=4455452588774044 get 26 comments
+weibo mid=4455464978393888 get 96 comments
+weibo mid=4455485803954068 get 0 comments
+weibo mid=4455491012788726 get 439 comments
+weibo mid=4455492665193761 get 11 comments
+weibo mid=4455494883899596 get 29 comments
+weibo mid=4455497908000100 get 328 comments
+weibo mid=4455509618830606 get 31 comments
+weibo mid=4455602442499814 get 47 comments
+weibo mid=4455669279029106 get 82 comments
+weibo mid=4455961147957339 get 62 comments
+weibo mid=4456021738666574 get 415 comments
+weibo mid=4457082612755264 get 180 comments
+weibo mid=4457389611024769 get 0 comments
+weibo mid=4457390856450859 get 58 comments
+weibo mid=4457393297306672 get 434 comments
+weibo mid=4457394631832876 get 108 comments
+weibo mid=4457396715422267 get 91 comments
+weibo mid=4457399035168411 get 397 comments
+weibo mid=4457400477706344 get 12 comments
+weibo mid=4457400696011454 get 195 comments
+weibo mid=4457400788867834 get 25 comments
+weibo mid=4457401988072398 get 85 comments
+weibo mid=4457403694951399 get 94 comments
+weibo mid=4457418354155357 get 68 comments
+weibo mid=4457421785060207 get 24 comments
+weibo mid=4457424935523634 get 28 comments
+weibo mid=4462822156669554 get 236 comments
+weibo mid=4462822489045714 get 426 comments
+weibo mid=4462827643544973 get 408 comments
+weibo mid=4462828704685222 get 411 comments
+weibo mid=4462829119585157 get 418 comments
+weibo mid=4462831216595990 get 444 comments
+weibo mid=4462832651093015 get 228 comments
+weibo mid=4462832697818955 get 376 comments
+weibo mid=4462835071851125 get 62 comments
+weibo mid=4462835931649128 get 386 comments
+weibo mid=4462837801986360 get 432 comments
+weibo mid=4462842378369661 get 422 comments
+weibo mid=4462842466220285 get 425 comments
+weibo mid=4462842776319063 get 25 comments
+weibo mid=4462843677729721 get 56 comments
+weibo mid=4462844181781191 get 419 comments
+weibo mid=4462845914067058 get 331 comments
+weibo mid=4462848317240841 get 31 comments
+weibo mid=4462849742876242 get 268 comments
+weibo mid=4462855845325719 get 362 comments
+weibo mid=4462857644913883 get 397 comments
+weibo mid=4462857649798709 get 433 comments
+weibo mid=4462858245425209 get 25 comments
+weibo mid=4462858345870680 get 196 comments
+weibo mid=4462858421351315 get 82 comments
+weibo mid=4462858756959062 get 228 comments
+weibo mid=4462858978917414 get 419 comments
+weibo mid=4462859021292811 get 185 comments
+weibo mid=4462859595075714 get 33 comments
+weibo mid=4462859725064952 get 404 comments
+weibo mid=4462861319197173 get 152 comments
+weibo mid=4462861499951761 get 366 comments
+weibo mid=4462861814547945 get 420 comments
+weibo mid=4462863990902572 get 405 comments
+weibo mid=4462864595121509 get 132 comments
+weibo mid=4462865626876060 get 124 comments
+weibo mid=4462866537548287 get 391 comments
+weibo mid=4462867468679876 get 26 comments
+weibo mid=4462870697725882 get 425 comments
+weibo mid=4462871746301565 get 152 comments
+weibo mid=4462872602026673 get 23 comments
+weibo mid=4462878352569021 get 373 comments
+weibo mid=4462882068792712 get 355 comments
+weibo mid=4462884174473569 get 11 comments
+weibo mid=4462893451510816 get 187 comments
+weibo mid=4462903782086070 get 264 comments
+weibo mid=4462906572196103 get 268 comments
+weibo mid=4462907640966492 get 421 comments
+weibo mid=4462911785011001 get 286 comments
+weibo mid=4462917292565880 get 179 comments
+weibo mid=4462917904977040 get 439 comments
+weibo mid=4462918035121172 get 433 comments
+weibo mid=4462919687033050 get 185 comments
+weibo mid=4462923084320757 get 209 comments
+weibo mid=4462923563221669 get 49 comments
+weibo mid=4462925764820933 get 161 comments
+weibo mid=4462926033174626 get 251 comments
+weibo mid=4462929501832235 get 103 comments
+weibo mid=4462931624511354 get 78 comments
+weibo mid=4462934258014138 get 141 comments
+weibo mid=4462942546374109 get 78 comments
+weibo mid=4462944433823824 get 440 comments
+weibo mid=4462945469347261 get 286 comments
+weibo mid=4462949634915933 get 206 comments
+weibo mid=4462950406255300 get 456 comments
+weibo mid=4462953015344780 get 63 comments
+weibo mid=4462954382573675 get 138 comments
+weibo mid=4462971591548912 get 81 comments
+weibo mid=4462997281991531 get 446 comments
+weibo mid=4463031259797825 get 359 comments
+weibo mid=4463096599188282 get 393 comments
+weibo mid=4463097253676077 get 170 comments
+weibo mid=4463100466368876 get 48 comments
+weibo mid=4463100960771788 get 383 comments
+weibo mid=4463102873120076 get 199 comments
+weibo mid=4463105134556012 get 176 comments
+weibo mid=4463105172159889 get 120 comments
+weibo mid=4463106572595789 get 71 comments
+weibo mid=4463108678573243 get 0 comments
+weibo mid=4463109110173258 get 436 comments
+weibo mid=4463112810393845 get 0 comments
+weibo mid=4463114583871522 get 216 comments
+weibo mid=4463119705049362 get 38 comments
+weibo mid=4463126034851299 get 133 comments
+weibo mid=4463126172562892 get 164 comments
+weibo mid=4463128010275697 get 68 comments
+weibo mid=4463135018904854 get 394 comments
+weibo mid=4463138378738650 get 37 comments
+weibo mid=4463138528866876 get 157 comments
+weibo mid=4463139381081273 get 43 comments
+weibo mid=4463140844970578 get 387 comments
+weibo mid=4463141628514059 get 206 comments
+weibo mid=4463147354054438 get 26 comments
+weibo mid=4463149555834163 get 54 comments
+weibo mid=4463153494596580 get 99 comments
+weibo mid=4463154862466598 get 62 comments
+weibo mid=4463158569212674 get 41 comments
+weibo mid=4463163933973952 get 377 comments
+weibo mid=4463166774153865 get 106 comments
+weibo mid=4463167922921662 get 250 comments
+weibo mid=4463170960053039 get 78 comments
+weibo mid=4463180044820967 get 23 comments
+weibo mid=4463265662839607 get 39 comments
+weibo mid=4463297715921938 get 400 comments
+weibo mid=4463299497862907 get 280 comments
+weibo mid=4463301436268843 get 19 comments
+weibo mid=4463301855345469 get 402 comments
+weibo mid=4463303671586037 get 64 comments
+weibo mid=4463315071434455 get 57 comments
+weibo mid=4463316304419119 get 51 comments
+weibo mid=4463317906999300 get 46 comments
+weibo mid=4463556868790204 get 424 comments
+weibo mid=4463580067870579 get 39 comments
+weibo mid=4463624217227203 get 189 comments
+weibo mid=4463925066162194 get 431 comments
+weibo mid=4464401224437292 get 275 comments
+weibo mid=4464559694060523 get 448 comments
+weibo mid=4464585501654542 get 437 comments
+weibo mid=4464702736097559 get 278 comments
+weibo mid=4464708679756100 get 137 comments
+weibo mid=4464710243685171 get 437 comments
+weibo mid=4464731366384060 get 26 comments
+weibo mid=4464790137020690 get 41 comments
+weibo mid=4464907766558503 get 26 comments
+weibo mid=4464913197633524 get 58 comments
+weibo mid=4464932030562400 get 51 comments
+weibo mid=4464937860251978 get 31 comments
+weibo mid=4469078359630827 get 453 comments
+weibo mid=4469079144630598 get 447 comments
+weibo mid=4469192394423486 get 409 comments
+weibo mid=4462963135673470 get 0 comments

@@ -1,0 +1,617 @@
+
+
+get_user method starts
+##############################
+
+[2020-02-20 21:54:44]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-20 21:57:08]  url https://weibo.com/1788309663/info job info error
+[2020-02-20 21:57:21]  Something wrong when getting this url:https://weibo.com/5538631351/info, 'html'
+[2020-02-20 21:57:39]  Something wrong when getting this url:https://weibo.com/5336619354/info, 'html'
+[2020-02-20 21:57:54]  url https://weibo.com/5998997778/info job info error
+[2020-02-20 22:02:25]  url https://weibo.com/5471746722/info job info error
+[2020-02-20 22:03:10]  Something wrong when getting this url:https://weibo.com/2752419363/info, 'html'
+[2020-02-20 22:03:19]  Something wrong when getting this url:https://weibo.com/5253690293/info, 'html'
+[2020-02-20 22:05:56]  url https://weibo.com/3506802802/info job info error
+[2020-02-20 22:06:10]  url https://weibo.com/3849973126/info job info error
+[2020-02-20 22:07:01]  url https://weibo.com/6514066148/info job info error
+[2020-02-20 22:07:19]  url https://weibo.com/5915744990/info job info error
+[2020-02-21 09:55:28]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-21 09:58:09]  Something wrong when getting this url:https://weibo.com/6255833970/info, 'html'
+[2020-02-21 10:04:56]  url https://weibo.com/2952135774/info job info error
+[2020-02-21 10:04:59]  url https://weibo.com/1219342047/info job info error
+[2020-02-21 10:09:35]  url https://weibo.com/2269013675/info job info error
+[2020-02-21 10:09:48]  Something wrong when getting this url:https://weibo.com/5832858844/info, 'html'
+[2020-02-21 10:10:32]  url https://weibo.com/6561890699/info job info error
+[2020-02-21 10:11:02]  url https://weibo.com/1471420051/info job info error
+[2020-02-21 10:13:11]  url https://weibo.com/6206053097/info job info error
+[2020-02-21 10:13:11]  url https://weibo.com/6206053097/info job info error
+[2020-02-21 10:16:39]  Something wrong when getting this url:https://weibo.com/6200005854/info, 'html'
+[2020-02-21 10:19:17]  url https://weibo.com/2721340013/info job info error
+[2020-02-21 10:22:09]  url https://weibo.com/2728966594/info job info error
+[2020-02-21 10:27:41]  url https://weibo.com/6517205550/info job info error
+[2020-02-21 10:30:14]  url https://weibo.com/1636314977/info job info error
+[2020-02-21 10:31:45]  url https://weibo.com/1873974387/info job info error
+[2020-02-21 10:32:40]  Something wrong when getting this url:https://weibo.com/1674581970/info, 'html'
+[2020-02-21 10:33:39]  Something wrong when getting this url:https://weibo.com/6007914384/info, 'html'
+[2020-02-21 10:36:48]  Something wrong when getting this url:https://weibo.com/1485515274/info, 'html'
+[2020-02-21 10:42:19]  Something wrong when getting this url:https://weibo.com/6068000507/info, 'html'
+[2020-02-21 10:42:52]  url https://weibo.com/1842859410/info job info error
+[2020-02-21 10:44:37]  url https://weibo.com/6439593768/info job info error
+[2020-02-21 10:44:40]  url https://weibo.com/5579235840/info job info error
+[2020-02-21 10:45:39]  Something wrong when getting this url:https://weibo.com/3918222122/info, 'html'
+[2020-02-21 10:47:11]  Something wrong when getting this url:https://weibo.com/2537834270/info, 'html'
+[2020-02-21 10:47:39]  Something wrong when getting this url:https://weibo.com/1858656662/info, 'html'
+[2020-02-21 10:47:54]  url https://weibo.com/1793668460/info job info error
+[2020-02-21 10:52:14]  Something wrong when getting this url:https://weibo.com/5501467802/info, 'html'
+[2020-02-21 10:56:46]  url https://weibo.com/3316170891/info job info error
+[2020-02-21 10:56:56]  url https://weibo.com/1729169997/info job info error
+[2020-02-21 11:06:28]  url https://weibo.com/6352518368/info job info error
+[2020-02-21 11:14:34]  url https://weibo.com/3321724612/info job info error
+[2020-02-21 11:17:11]  Something wrong when getting this url:https://weibo.com/5199987636/info, 'html'
+[2020-02-21 11:19:33]  url https://weibo.com/6314257961/info job info error
+[2020-02-21 11:22:36]  Something wrong when getting this url:https://weibo.com/1496911830/info, 'html'
+[2020-02-21 11:23:18]  url https://weibo.com/6822099742/info job info error
+[2020-02-21 11:29:53]  url https://weibo.com/6062201363/info job info error
+[2020-02-21 11:31:09]  Something wrong when getting this url:https://weibo.com/5031507215/info, 'html'
+[2020-02-21 11:34:05]  url https://weibo.com/6099976748/info job info error
+[2020-02-21 11:36:54]  url https://weibo.com/5898056505/info job info error
+[2020-02-21 11:39:34]  url https://weibo.com/6301603336/info job info error
+[2020-02-21 11:40:55]  Something wrong when getting this url:https://weibo.com/5448337405/info, 'html'
+[2020-02-21 11:51:11]  Something wrong when getting this url:https://weibo.com/5317549315/info, 'html'
+[2020-02-21 11:54:41]  Something wrong when getting this url:https://weibo.com/1936916521/info, 'html'
+[2020-02-21 12:03:40]  url https://weibo.com/7213721864/info job info error
+[2020-02-21 12:04:12]  url https://weibo.com/5805094607/info job info error
+[2020-02-21 12:06:00]  url https://weibo.com/5025822091/info job info error
+[2020-02-21 12:07:04]  url https://weibo.com/1771650543/info job info error
+[2020-02-21 12:07:30]  url https://weibo.com/1643264963/info job info error
+[2020-02-21 12:08:54]  url https://weibo.com/2091436724/info job info error
+[2020-02-21 12:08:54]  Something wrong when getting this url:https://weibo.com/2091436724/info, 'html'
+[2020-02-21 12:08:57]  url https://weibo.com/2091436724/info job info error
+[2020-02-21 12:10:14]  url https://weibo.com/6252170456/info job info error
+[2020-02-21 12:10:49]  url https://weibo.com/6127695314/info job info error
+[2020-02-21 12:13:37]  url https://weibo.com/5711953736/info job info error
+[2020-02-21 12:14:11]  url https://weibo.com/1563759021/info job info error
+[2020-02-21 12:15:49]  url https://weibo.com/5359384628/info job info error
+[2020-02-21 12:16:40]  url https://weibo.com/1232173235/info job info error
+[2020-02-21 12:16:49]  url https://weibo.com/5819638730/info job info error
+[2020-02-21 12:20:06]  url https://weibo.com/2553307945/info job info error
+[2020-02-21 12:25:44]  url https://weibo.com/5869668343/info job info error
+[2020-02-21 12:30:42]  Something wrong when getting this url:https://weibo.com/7319331081/info, 'html'
+[2020-02-21 12:35:39]  Something wrong when getting this url:https://weibo.com/5696061809/info, 'html'
+[2020-02-21 12:36:45]  url https://weibo.com/2993354931/info job info error
+[2020-02-21 12:48:36]  url https://weibo.com/1930224547/info job info error
+[2020-02-21 12:49:41]  url https://weibo.com/1732879002/info job info error
+[2020-02-21 12:49:41]  url https://weibo.com/1732879002/info job info error
+[2020-02-21 12:54:40]  Something wrong when getting this url:https://weibo.com/2513596220/info, 'html'
+[2020-02-21 12:55:02]  url https://weibo.com/6306380742/info job info error
+[2020-02-21 12:58:19]  Something wrong when getting this url:https://weibo.com/6187464191/info, 'html'
+[2020-02-21 13:00:41]  Something wrong when getting this url:https://weibo.com/2356115520/info, 'html'
+[2020-02-21 13:04:50]  url https://weibo.com/1721454817/info job info error
+[2020-02-21 13:04:52]  url https://weibo.com/2590660711/info job info error
+[2020-02-21 13:05:20]  url https://weibo.com/6020342035/info job info error
+[2020-02-21 13:05:20]  Something wrong when getting this url:https://weibo.com/6020342035/info, 'html'
+[2020-02-21 13:05:23]  url https://weibo.com/6020342035/info job info error
+[2020-02-21 13:11:13]  url https://weibo.com/1740359317/info job info error
+[2020-02-21 13:13:50]  Something wrong when getting this url:https://weibo.com/1158905355/info, 'html'
+[2020-02-21 13:17:19]  url https://weibo.com/6331197628/info job info error
+[2020-02-21 13:17:27]  Something wrong when getting this url:https://weibo.com/2589609343/info, 'html'
+[2020-02-21 13:19:11]  url https://weibo.com/1392294670/info job info error
+[2020-02-21 13:24:38]  url https://weibo.com/1402746777/info job info error
+[2020-02-21 13:24:47]  url https://weibo.com/3235627374/info job info error
+[2020-02-21 13:24:53]  Something wrong when getting this url:https://weibo.com/5862077057/info, 'html'
+[2020-02-21 13:29:47]  url https://weibo.com/2387857055/info job info error
+[2020-02-21 13:35:04]  url https://weibo.com/5182868991/info job info error
+[2020-02-21 13:37:37]  url https://weibo.com/1857428312/info job info error
+[2020-02-21 13:39:31]  url https://weibo.com/3886948724/info job info error
+[2020-02-21 13:41:03]  url https://weibo.com/2437036981/info job info error
+[2020-02-21 13:43:21]  url https://weibo.com/5758902397/info job info error
+[2020-02-21 13:44:34]  url https://weibo.com/6355663751/info job info error
+[2020-02-21 13:48:17]  url https://weibo.com/5673992657/info job info error
+[2020-02-21 14:00:30]  url https://weibo.com/6117921027/info job info error
+[2020-02-21 14:03:32]  Something wrong when getting this url:https://weibo.com/7192190306/info, 'html'
+[2020-02-21 14:05:11]  url https://weibo.com/5235222649/info job info error
+[2020-02-21 14:08:07]  url https://weibo.com/5644727559/info job info error
+[2020-02-21 14:13:35]  url https://weibo.com/3750814740/info job info error
+[2020-02-21 14:14:29]  url https://weibo.com/6628837064/info job info error
+[2020-02-21 14:17:02]  url https://weibo.com/5303436171/info job info error
+[2020-02-21 14:19:31]  url https://weibo.com/6368496115/info job info error
+[2020-02-21 14:22:41]  url https://weibo.com/2413605162/info job info error
+[2020-02-21 14:22:59]  url https://weibo.com/1885093095/info job info error
+[2020-02-21 14:33:30]  url https://weibo.com/5295422778/info job info error
+[2020-02-21 14:37:08]  url https://weibo.com/3754427455/info job info error
+[2020-02-21 14:44:25]  Something wrong when getting this url:https://weibo.com/5553486071/info, 'html'
+[2020-02-21 14:46:09]  url https://weibo.com/2182497684/info job info error
+[2020-02-21 14:48:42]  url https://weibo.com/2690797014/info job info error
+[2020-02-21 14:50:19]  url https://weibo.com/5657514281/info job info error
+[2020-02-21 14:57:15]  Something wrong when getting this url:https://weibo.com/6614944486/info, 'html'
+[2020-02-21 15:04:23]  url https://weibo.com/1697036087/info job info error
+[2020-02-21 15:04:56]  url https://weibo.com/1165190747/info job info error
+[2020-02-21 15:05:54]  url https://weibo.com/1008661660/info job info error
+[2020-02-21 15:08:39]  Something wrong when getting this url:https://weibo.com/5273219438/info, 'html'
+[2020-02-21 15:11:45]  url https://weibo.com/5531959133/info job info error
+[2020-02-21 15:11:45]  url https://weibo.com/5531959133/info job info error
+[2020-02-21 15:17:41]  url https://weibo.com/6513042532/info job info error
+[2020-02-21 15:24:38]  url https://weibo.com/7360191399/info job info error
+[2020-02-21 15:26:11]  url https://weibo.com/5148050412/info job info error
+[2020-02-21 15:31:38]  Something wrong when getting this url:https://weibo.com/1735267987/info, 'html'
+[2020-02-21 15:32:40]  Something wrong when getting this url:https://weibo.com/2876512450/info, 'html'
+[2020-02-21 15:32:50]  url https://weibo.com/6863631353/info job info error
+[2020-02-21 15:35:06]  Something wrong when getting this url:https://weibo.com/3082511421/info, 'html'
+[2020-02-21 15:37:22]  url https://weibo.com/6105177085/info job info error
+[2020-02-21 15:37:47]  url https://weibo.com/6128554653/info job info error
+[2020-02-21 15:39:40]  url https://weibo.com/6237516932/info job info error
+[2020-02-21 15:41:46]  Something wrong when getting this url:https://weibo.com/1642785044/info, 'html'
+[2020-02-21 15:42:19]  url https://weibo.com/2862816040/info job info error
+[2020-02-21 15:45:12]  url https://weibo.com/1075190035/info job info error
+[2020-02-21 15:51:22]  url https://weibo.com/6686445853/info job info error
+[2020-02-21 15:53:23]  url https://weibo.com/2007448602/info job info error
+[2020-02-21 15:53:56]  Something wrong when getting this url:https://weibo.com/7041182146/info, 'html'
+[2020-02-21 15:56:39]  url https://weibo.com/5333890845/info job info error
+[2020-02-21 15:57:08]  url https://weibo.com/6800950751/info job info error
+[2020-02-21 15:57:08]  url https://weibo.com/6800950751/info job info error
+[2020-02-21 16:04:02]  url https://weibo.com/1731451815/info job info error
+[2020-02-21 16:08:27]  url https://weibo.com/6395356056/info job info error
+[2020-02-21 16:09:10]  url https://weibo.com/6385900265/info job info error
+[2020-02-21 16:11:26]  url https://weibo.com/6962071303/info job info error
+[2020-02-21 16:14:50]  url https://weibo.com/3369596700/info job info error
+[2020-02-21 16:17:05]  url https://weibo.com/1752513600/info job info error
+[2020-02-21 16:22:13]  url https://weibo.com/2630784554/info job info error
+[2020-02-21 16:24:01]  url https://weibo.com/6079255498/info job info error
+[2020-02-21 16:29:11]  Something wrong when getting this url:https://weibo.com/6870130042/info, 'html'
+[2020-02-21 16:30:40]  Something wrong when getting this url:https://weibo.com/5209548833/info, 'html'
+[2020-02-21 16:33:03]  url https://weibo.com/1968465161/info job info error
+[2020-02-21 16:34:54]  url https://weibo.com/2281552747/info job info error
+[2020-02-21 16:38:11]  url https://weibo.com/5703092085/info job info error
+[2020-02-21 16:40:01]  url https://weibo.com/1652872312/info job info error
+[2020-02-21 16:41:58]  url https://weibo.com/5269280632/info job info error
+[2020-02-21 16:43:38]  url https://weibo.com/1962312050/info job info error
+[2020-02-21 16:48:55]  url https://weibo.com/5904527872/info job info error
+[2020-02-21 16:48:55]  url https://weibo.com/5904527872/info job info error
+[2020-02-21 16:54:11]  url https://weibo.com/1861507334/info job info error
+[2020-02-21 17:16:01]  Something wrong when getting this url:https://weibo.com/7191069705/info, 'html'
+[2020-02-21 17:16:06]  Something wrong when getting this url:https://weibo.com/7191069705/info, 'html'
+[2020-02-21 17:19:07]  url https://weibo.com/6563967946/info job info error
+[2020-02-21 17:21:12]  Something wrong when getting this url:https://weibo.com/6211366215/info, 'html'
+[2020-02-21 17:21:42]  url https://weibo.com/2354126731/info job info error
+[2020-02-21 17:28:34]  url https://weibo.com/5447179395/info job info error
+[2020-02-21 17:31:15]  url https://weibo.com/6333981525/info job info error
+[2020-02-21 17:32:12]  url https://weibo.com/5995154673/info job info error
+[2020-02-21 17:37:27]  url https://weibo.com/3365355414/info job info error
+[2020-02-21 17:39:03]  Something wrong when getting this url:https://weibo.com/6202590953/info, 'html'
+[2020-02-21 17:42:27]  Something wrong when getting this url:https://weibo.com/6513511322/info, 'html'
+[2020-02-21 17:43:58]  url https://weibo.com/5222743500/info job info error
+[2020-02-21 17:55:11]  Something wrong when getting this url:https://weibo.com/6582158059/info, 'html'
+[2020-02-21 17:56:00]  url https://weibo.com/6347232475/info job info error
+[2020-02-21 17:58:51]  url https://weibo.com/6042769765/info job info error
+[2020-02-21 18:02:13]  Something wrong when getting this url:https://weibo.com/7346632675/info, 'html'
+[2020-02-21 18:02:43]  url https://weibo.com/1878170903/info job info error
+[2020-02-21 18:03:11]  url https://weibo.com/5018832470/info job info error
+[2020-02-21 18:05:35]  url https://weibo.com/3122900142/info job info error
+[2020-02-21 18:05:38]  url https://weibo.com/5644343762/info job info error
+[2020-02-21 18:13:15]  url https://weibo.com/1303451751/info job info error
+[2020-02-21 18:13:58]  url https://weibo.com/5228093195/info job info error
+[2020-02-21 18:14:54]  url https://weibo.com/7345023440/info job info error
+[2020-02-21 18:15:08]  url https://weibo.com/1701561443/info job info error
+[2020-02-21 18:18:55]  Error happened when insert id=1880776134 into database: (1364, "Field 'nickname' doesn't have a default value")
+[2020-02-21 18:20:05]  Error happened when insert id=1850555077 into database: (1364, "Field 'nickname' doesn't have a default value")
+[2020-02-21 18:21:55]  url https://weibo.com/5977217171/info job info error
+[2020-02-21 18:23:46]  url https://weibo.com/7286762917/info job info error
+[2020-02-21 18:29:02]  url https://weibo.com/6404599118/info job info error
+[2020-02-21 18:29:28]  url https://weibo.com/2546541264/info job info error
+[2020-02-21 18:32:33]  Error happened when insert id=7267504033 into database: (1364, "Field 'nickname' doesn't have a default value")
+[2020-02-21 18:33:44]  url https://weibo.com/5220336446/info job info error
+[2020-02-21 18:35:00]  url https://weibo.com/7344351693/info job info error
+[2020-02-21 18:36:12]  Something wrong when getting this url:https://weibo.com/5227278176/info, 'html'
+[2020-02-21 18:36:38]  Something wrong when getting this url:https://weibo.com/5667436077/info, 'html'
+[2020-02-21 18:37:38]  Something wrong when getting this url:https://weibo.com/7325347769/info, 'html'
+[2020-02-21 18:40:11]  url https://weibo.com/5364024110/info job info error
+[2020-02-21 18:43:40]  Error happened when insert id=2499890983 into database: (1364, "Field 'nickname' doesn't have a default value")
+[2020-02-21 18:56:23]  url https://weibo.com/3826723921/info job info error
+[2020-02-21 18:56:57]  url https://weibo.com/6465292893/info job info error
+[2020-02-21 18:57:21]  url https://weibo.com/2398952155/info job info error
+[2020-02-21 19:06:04]  Something wrong when getting this url:https://weibo.com/5734814487/info, 'html'
+[2020-02-21 19:08:36]  Something wrong when getting this url:https://weibo.com/7129600535/info, 'html'
+[2020-02-21 19:09:20]  url https://weibo.com/2614695313/info job info error
+[2020-02-21 19:09:48]  url https://weibo.com/2380303471/info job info error
+[2020-02-21 19:11:30]  url https://weibo.com/1277546975/info job info error
+[2020-02-21 19:14:06]  Something wrong when getting this url:https://weibo.com/6434381601/info, 'html'
+[2020-02-21 19:16:05]  url https://weibo.com/7169084721/info job info error
+[2020-02-21 19:16:16]  url https://weibo.com/6853847710/info job info error
+[2020-02-21 19:17:48]  url https://weibo.com/5206675013/info job info error
+[2020-02-21 19:18:20]  url https://weibo.com/7030645707/info job info error
+[2020-02-21 19:23:04]  url https://weibo.com/3298150535/info job info error
+[2020-02-21 19:23:33]  url https://weibo.com/6088055482/info job info error
+[2020-02-22 09:55:59]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-22 09:57:08]  url https://weibo.com/5737872814/info job info error
+[2020-02-22 09:57:23]  url https://weibo.com/6283244750/info job info error
+[2020-02-22 09:59:16]  url https://weibo.com/5605263914/info job info error
+[2020-02-22 10:00:05]  url https://weibo.com/2794368194/info job info error
+[2020-02-22 10:02:06]  url https://weibo.com/6269796272/info job info error
+[2020-02-22 10:10:08]  url https://weibo.com/7295030078/info job info error
+[2020-02-22 10:11:25]  url https://weibo.com/5163285794/info job info error
+[2020-02-22 10:13:13]  url https://weibo.com/3955319381/info job info error
+[2020-02-22 10:13:13]  url https://weibo.com/3955319381/info job info error
+[2020-02-22 10:18:39]  url https://weibo.com/5673668873/info job info error
+[2020-02-22 10:19:51]  url https://weibo.com/6652138680/info job info error
+[2020-02-22 10:20:20]  url https://weibo.com/7336916786/info job info error
+[2020-02-22 10:23:49]  url https://weibo.com/5171919020/info job info error
+[2020-02-22 10:24:49]  url https://weibo.com/6857851933/info job info error
+[2020-02-22 10:25:32]  url https://weibo.com/5099054952/info job info error
+[2020-02-22 10:26:31]  url https://weibo.com/6572242212/info job info error
+[2020-02-22 10:26:46]  url https://weibo.com/5086836244/info job info error
+[2020-02-22 10:26:56]  url https://weibo.com/7333191402/info job info error
+[2020-02-22 10:28:02]  url https://weibo.com/1291365030/info job info error
+[2020-02-22 10:28:05]  url https://weibo.com/5255964240/info job info error
+[2020-02-22 10:28:27]  url https://weibo.com/6003239505/info job info error
+[2020-02-22 10:31:50]  url https://weibo.com/2093572642/info job info error
+[2020-02-22 10:33:10]  url https://weibo.com/2714430851/info job info error
+[2020-02-22 10:36:28]  url https://weibo.com/5342153956/info job info error
+[2020-02-22 10:36:58]  url https://weibo.com/3199048060/info job info error
+[2020-02-22 10:38:52]  url https://weibo.com/6086656707/info job info error
+[2020-02-22 10:41:23]  url https://weibo.com/5629706933/info job info error
+[2020-02-22 10:42:54]  Something wrong when getting this url:https://weibo.com/5704483955/info, 'html'
+[2020-02-22 10:43:57]  url https://weibo.com/2698261303/info job info error
+[2020-02-22 10:53:32]  url https://weibo.com/6982109356/info job info error
+[2020-02-22 11:01:47]  url https://weibo.com/2703835647/info job info error
+[2020-02-22 11:03:39]  Something wrong when getting this url:https://weibo.com/3221105595/info, 'html'
+[2020-02-22 11:05:37]  Something wrong when getting this url:https://weibo.com/3100727655/info, 'html'
+[2020-02-22 11:15:25]  url https://weibo.com/5457471200/info job info error
+[2020-02-22 11:21:38]  Something wrong when getting this url:https://weibo.com/5766454606/info, 'html'
+[2020-02-22 11:23:26]  url https://weibo.com/5506357205/info job info error
+[2020-02-22 11:23:26]  url https://weibo.com/5506357205/info job info error
+[2020-02-22 11:23:26]  url https://weibo.com/5506357205/info job info error
+[2020-02-22 11:23:50]  url https://weibo.com/6082620371/info job info error
+[2020-02-22 11:25:11]  url https://weibo.com/5535730220/info job info error
+[2020-02-22 11:29:33]  url https://weibo.com/3810344601/info job info error
+[2020-02-22 11:30:44]  url https://weibo.com/1062159197/info job info error
+[2020-02-22 11:32:21]  url https://weibo.com/6476391300/info job info error
+[2020-02-22 11:32:46]  url https://weibo.com/5447191473/info job info error
+[2020-02-22 11:34:01]  Something wrong when getting this url:https://weibo.com/6227905877/info, 'html'
+[2020-02-22 11:35:27]  url https://weibo.com/5538808943/info job info error
+[2020-02-22 11:35:57]  Something wrong when getting this url:https://weibo.com/1787517965/info, 'html'
+[2020-02-22 11:40:41]  url https://weibo.com/1314824341/info job info error
+[2020-02-22 11:40:41]  url https://weibo.com/1314824341/info job info error
+[2020-02-22 11:47:31]  url https://weibo.com/5685921356/info job info error
+[2020-02-22 11:48:16]  url https://weibo.com/3389260564/info job info error
+[2020-02-22 11:51:36]  url https://weibo.com/2591242720/info job info error
+[2020-02-22 11:51:55]  url https://weibo.com/5939939436/info job info error
+[2020-02-22 11:51:55]  url https://weibo.com/5939939436/info job info error
+[2020-02-22 11:56:42]  url https://weibo.com/2619670237/info job info error
+[2020-02-22 12:00:13]  Something wrong when getting this url:https://weibo.com/6341430125/info, 'html'
+[2020-02-22 12:04:50]  url https://weibo.com/5978020949/info job info error
+[2020-02-22 12:05:31]  Something wrong when getting this url:https://weibo.com/1457965587/info, 'html'
+[2020-02-22 12:06:09]  Something wrong when getting this url:https://weibo.com/5892584532/info, 'html'
+[2020-02-22 12:07:19]  url https://weibo.com/6036405846/info job info error
+[2020-02-22 12:11:50]  url https://weibo.com/2157341004/info job info error
+[2020-02-22 12:18:45]  Something wrong when getting this url:https://weibo.com/5527610839/info, 'html'
+[2020-02-22 12:21:55]  url https://weibo.com/2396373013/info job info error
+[2020-02-22 12:23:07]  Something wrong when getting this url:https://weibo.com/3835358277/info, 'html'
+[2020-02-22 12:23:26]  url https://weibo.com/2175212897/info job info error
+[2020-02-23 09:14:41]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-23 09:14:48]  url https://weibo.com/1847914815/info job info error
+[2020-02-23 09:18:20]  url https://weibo.com/5087757675/info job info error
+[2020-02-23 09:22:10]  url https://weibo.com/1911393841/info job info error
+[2020-02-23 09:23:11]  url https://weibo.com/5725856923/info job info error
+[2020-02-23 09:24:34]  url https://weibo.com/5365960494/info job info error
+[2020-02-23 09:30:53]  url https://weibo.com/6068265768/info job info error
+[2020-02-23 09:32:45]  url https://weibo.com/5403385252/info job info error
+[2020-02-23 09:32:52]  url https://weibo.com/6363831084/info job info error
+[2020-02-23 09:35:18]  url https://weibo.com/6556581357/info job info error
+[2020-02-23 09:35:45]  url https://weibo.com/6984670174/info job info error
+[2020-02-23 09:40:31]  url https://weibo.com/3781513577/info job info error
+[2020-02-23 09:41:06]  Something wrong when getting this url:https://weibo.com/6598960796/info, 'html'
+[2020-02-23 09:43:49]  Something wrong when getting this url:https://weibo.com/1960645741/info, 'html'
+[2020-02-23 09:44:37]  url https://weibo.com/3008486491/info job info error
+[2020-02-23 09:46:27]  url https://weibo.com/5186692163/info job info error
+[2020-02-23 09:50:54]  url https://weibo.com/1893934895/info job info error
+[2020-02-23 09:51:36]  url https://weibo.com/5494454457/info job info error
+[2020-02-23 09:56:53]  url https://weibo.com/2494093210/info job info error
+[2020-02-23 10:02:37]  url https://weibo.com/3521888063/info job info error
+[2020-02-23 10:03:09]  url https://weibo.com/5335765600/info job info error
+[2020-02-23 10:06:21]  url https://weibo.com/6813258450/info job info error
+[2020-02-23 10:08:38]  url https://weibo.com/3407798892/info job info error
+[2020-02-23 10:10:01]  url https://weibo.com/5381931323/info job info error
+[2020-02-23 10:13:50]  url https://weibo.com/3637428682/info job info error
+[2020-02-23 10:22:56]  url https://weibo.com/2115431343/info job info error
+[2020-02-23 10:23:35]  url https://weibo.com/5173363568/info job info error
+[2020-02-23 10:24:33]  url https://weibo.com/6036790960/info job info error
+[2020-02-23 10:28:51]  url https://weibo.com/1927601684/info job info error
+[2020-02-23 10:31:38]  Something wrong when getting this url:https://weibo.com/7018732437/info, 'html'
+[2020-02-23 10:41:37]  url https://weibo.com/1184088327/info job info error
+[2020-02-23 10:41:37]  url https://weibo.com/1184088327/info job info error
+[2020-02-23 10:41:43]  url https://weibo.com/2839618254/info job info error
+[2020-02-23 10:42:52]  url https://weibo.com/1782503814/info job info error
+[2020-02-23 10:51:37]  url https://weibo.com/2990963673/info job info error
+[2020-02-23 10:56:41]  url https://weibo.com/3960782449/info job info error
+[2020-02-23 10:59:03]  url https://weibo.com/5772691478/info job info error
+[2020-02-23 10:59:06]  url https://weibo.com/6264211300/info job info error
+[2020-02-23 10:59:20]  url https://weibo.com/5677868092/info job info error
+[2020-02-23 10:59:56]  url https://weibo.com/5839860529/info job info error
+[2020-02-23 11:02:03]  url https://weibo.com/6506909087/info job info error
+[2020-02-23 11:02:30]  url https://weibo.com/1860977700/info job info error
+[2020-02-23 11:05:41]  url https://weibo.com/1999389343/info job info error
+[2020-02-23 11:10:19]  url https://weibo.com/5490646258/info job info error
+[2020-02-23 11:18:45]  url https://weibo.com/2270858167/info job info error
+[2020-02-23 11:19:11]  url https://weibo.com/3511196932/info job info error
+[2020-02-23 11:19:25]  url https://weibo.com/5312242546/info job info error
+[2020-02-24 12:49:28]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-24 12:50:24]  url https://weibo.com/1824804472/info job info error
+[2020-02-24 12:53:41]  url https://weibo.com/1778932991/info job info error
+[2020-02-24 12:55:29]  url https://weibo.com/3860757076/info job info error
+[2020-02-24 12:55:32]  url https://weibo.com/5393309507/info job info error
+[2020-02-24 12:55:41]  Something wrong when getting this url:https://weibo.com/1783039390/info, 'html'
+[2020-02-24 12:56:23]  url https://weibo.com/2708981231/info job info error
+[2020-02-24 12:57:51]  url https://weibo.com/1135772780/info job info error
+[2020-02-24 12:59:20]  url https://weibo.com/2838415310/info job info error
+[2020-02-24 12:59:28]  Error happened when insert id=1680212132 into database: (1406, "Data too long for column 'high_school' at row 1")
+[2020-02-24 12:59:33]  url https://weibo.com/2154529081/info job info error
+[2020-02-24 13:01:49]  url https://weibo.com/1257490574/info job info error
+[2020-02-24 13:01:49]  url https://weibo.com/1257490574/info job info error
+[2020-02-24 13:01:49]  url https://weibo.com/1257490574/info job info error
+[2020-02-24 13:02:18]  url https://weibo.com/2418564270/info job info error
+[2020-02-24 13:09:40]  url https://weibo.com/1934725331/info job info error
+[2020-02-24 13:09:53]  url https://weibo.com/5764580212/info job info error
+[2020-02-24 13:10:37]  url https://weibo.com/1068599007/info job info error
+[2020-02-24 13:10:41]  Something wrong when getting this url:https://weibo.com/1791372085/info, 'html'
+[2020-02-24 13:10:49]  url https://weibo.com/1778819684/info job info error
+[2020-02-24 13:12:36]  url https://weibo.com/3253757924/info job info error
+[2020-02-24 13:14:05]  url https://weibo.com/2006923601/info job info error
+[2020-02-24 13:14:15]  url https://weibo.com/3107452602/info job info error
+[2020-02-24 13:14:34]  url https://weibo.com/1968811873/info job info error
+[2020-02-24 13:15:28]  url https://weibo.com/1891207672/info job info error
+[2020-02-24 13:15:44]  Something wrong when getting this url:https://weibo.com/5526247993/info, 'html'
+[2020-02-24 13:20:59]  url https://weibo.com/1237630275/info job info error
+[2020-02-24 13:23:00]  Something wrong when getting this url:https://weibo.com/1825728830/info, 'html'
+[2020-02-24 13:24:02]  Something wrong when getting this url:https://weibo.com/1746759345/info, 'html'
+[2020-02-24 13:25:23]  url https://weibo.com/1728730131/info job info error
+[2020-02-24 13:27:41]  url https://weibo.com/5592437112/info job info error
+[2020-02-24 13:27:41]  url https://weibo.com/5592437112/info job info error
+[2020-02-24 13:28:06]  url https://weibo.com/1655028440/info job info error
+[2020-02-24 13:28:06]  url https://weibo.com/1655028440/info job info error
+[2020-02-24 13:28:06]  url https://weibo.com/1655028440/info job info error
+[2020-02-24 13:28:06]  url https://weibo.com/1655028440/info job info error
+[2020-02-24 13:28:06]  url https://weibo.com/1655028440/info job info error
+[2020-02-24 13:29:15]  url https://weibo.com/5331784436/info job info error
+[2020-02-24 13:40:51]  Something wrong when getting this url:https://weibo.com/5391970258/info, 'html'
+[2020-02-24 13:48:25]  Something wrong when getting this url:https://weibo.com/3453893852/info, 'html'
+[2020-02-24 13:51:26]  url https://weibo.com/5847996900/info job info error
+[2020-02-24 13:52:53]  Something wrong when getting this url:https://weibo.com/1592110710/info, 'html'
+[2020-02-24 13:53:20]  url https://weibo.com/6483071684/info job info error
+[2020-02-24 13:53:26]  url https://weibo.com/6309258229/info job info error
+[2020-02-24 13:53:39]  url https://weibo.com/7064552982/info job info error
+[2020-02-24 13:57:51]  Something wrong when getting this url:https://weibo.com/6526748109/info, 'html'
+[2020-02-24 13:59:21]  url https://weibo.com/6317773029/info job info error
+[2020-02-24 14:00:10]  Something wrong when getting this url:https://weibo.com/1945222207/info, 'html'
+[2020-02-24 14:01:07]  Something wrong when getting this url:https://weibo.com/3983663204/info, 'html'
+[2020-02-24 14:03:48]  Something wrong when getting this url:https://weibo.com/5204694308/info, 'html'
+[2020-02-24 14:09:32]  url https://weibo.com/1797421785/info job info error
+[2020-02-24 14:23:38]  url https://weibo.com/6067513100/info job info error
+[2020-02-24 14:27:11]  Something wrong when getting this url:https://weibo.com/1921727405/info, 'html'
+[2020-02-24 14:29:30]  url https://weibo.com/5902340383/info job info error
+[2020-02-24 14:30:14]  url https://weibo.com/5234016705/info job info error
+[2020-02-24 14:33:07]  url https://weibo.com/6827125041/info job info error
+[2020-02-24 14:35:05]  url https://weibo.com/3096634087/info job info error
+[2020-02-24 14:35:29]  url https://weibo.com/6636153758/info job info error
+[2020-02-24 14:40:20]  url https://weibo.com/5370005836/info job info error
+[2020-02-24 14:41:00]  url https://weibo.com/2991952735/info job info error
+[2020-02-24 14:47:04]  url https://weibo.com/1566773613/info job info error
+[2020-02-24 14:47:04]  url https://weibo.com/1566773613/info job info error
+[2020-02-24 14:48:29]  Something wrong when getting this url:https://weibo.com/5635366005/info, 'html'
+[2020-02-24 14:53:09]  Something wrong when getting this url:https://weibo.com/6571680657/info, 'html'
+[2020-02-24 14:53:30]  url https://weibo.com/2055460695/info job info error
+[2020-02-24 14:54:29]  url https://weibo.com/1147635223/info job info error
+[2020-02-24 14:54:58]  url https://weibo.com/2957080965/info job info error
+[2020-02-24 14:57:55]  url https://weibo.com/5661664793/info job info error
+[2020-02-24 15:07:35]  url https://weibo.com/6384506345/info job info error
+[2020-02-24 15:09:16]  url https://weibo.com/2078205177/info job info error
+[2020-02-24 15:15:08]  url https://weibo.com/5864263089/info job info error
+[2020-02-24 15:21:59]  url https://weibo.com/2286509785/info job info error
+[2020-02-24 15:24:24]  url https://weibo.com/3895771520/info job info error
+[2020-02-24 15:24:54]  url https://weibo.com/1787914941/info job info error
+[2020-02-24 15:29:10]  Something wrong when getting this url:https://weibo.com/1502981365/info, 'html'
+[2020-02-24 15:34:09]  url https://weibo.com/2649676070/info job info error
+[2020-02-24 15:38:53]  Something wrong when getting this url:https://weibo.com/6053599043/info, 'html'
+[2020-02-24 15:44:44]  url https://weibo.com/3008373847/info job info error
+[2020-02-24 15:44:53]  Something wrong when getting this url:https://weibo.com/6078623352/info, 'html'
+[2020-02-24 15:46:11]  Something wrong when getting this url:https://weibo.com/2537885012/info, 'html'
+[2020-02-24 15:50:48]  url https://weibo.com/5235996605/info job info error
+[2020-02-24 15:54:46]  url https://weibo.com/6854730691/info job info error
+[2020-02-24 15:59:25]  url https://weibo.com/1087593422/info job info error
+[2020-02-24 16:02:18]  url https://weibo.com/1225645342/info job info error
+[2020-02-24 16:03:05]  url https://weibo.com/5665260006/info job info error
+[2020-02-24 16:13:22]  url https://weibo.com/5349823381/info job info error
+[2020-02-24 16:22:49]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-24 16:22:52]  Error happened when insert id=1680212132 into database: (1406, "Data too long for column 'high_school' at row 1")
+[2020-02-24 16:25:00]  url https://weibo.com/3135533955/info job info error
+[2020-02-24 16:26:59]  url https://weibo.com/5596205553/info job info error
+[2020-02-24 16:27:37]  url https://weibo.com/5494824737/info job info error
+[2020-02-24 16:28:25]  Something wrong when getting this url:https://weibo.com/2942629690/info, 'html'
+[2020-02-24 16:28:42]  url https://weibo.com/2606753944/info job info error
+[2020-02-24 16:28:52]  url https://weibo.com/5824100926/info job info error
+[2020-02-24 16:28:58]  Something wrong when getting this url:https://weibo.com/6472153174/info, 'html'
+[2020-02-24 16:33:40]  Something wrong when getting this url:https://weibo.com/3274351915/info, 'html'
+[2020-02-24 16:37:34]  Something wrong when getting this url:https://weibo.com/5194804831/info, 'html'
+[2020-02-24 16:39:05]  url https://weibo.com/1886028947/info job info error
+[2020-02-24 16:42:35]  url https://weibo.com/5488113965/info job info error
+[2020-02-24 16:43:18]  Something wrong when getting this url:https://weibo.com/3820839424/info, 'html'
+[2020-02-24 16:44:59]  Something wrong when getting this url:https://weibo.com/2022153117/info, 'html'
+[2020-02-24 16:45:39]  url https://weibo.com/2832951085/info job info error
+[2020-02-24 16:45:50]  url https://weibo.com/1758904723/info job info error
+[2020-02-24 16:52:37]  Something wrong when getting this url:https://weibo.com/5327049170/info, 'html'
+[2020-02-24 16:56:26]  url https://weibo.com/6472825728/info job info error
+[2020-02-24 16:59:10]  Something wrong when getting this url:https://weibo.com/5310772718/info, 'html'
+[2020-02-24 17:01:25]  url https://weibo.com/1893974207/info job info error
+[2020-02-24 17:01:40]  Something wrong when getting this url:https://weibo.com/6539308296/info, 'html'
+[2020-02-24 17:06:06]  Something wrong when getting this url:https://weibo.com/1949240664/info, 'html'
+[2020-02-24 17:15:02]  Something wrong when getting this url:https://weibo.com/2755101055/info, 'html'
+[2020-02-24 17:15:47]  Something wrong when getting this url:https://weibo.com/6051533066/info, 'html'
+[2020-02-24 17:16:12]  Something wrong when getting this url:https://weibo.com/5884040879/info, 'html'
+[2020-02-24 17:21:33]  url https://weibo.com/1824169920/info job info error
+[2020-02-24 17:21:44]  url https://weibo.com/6025997306/info job info error
+[2020-02-24 17:23:42]  url https://weibo.com/5382275976/info job info error
+[2020-02-24 17:24:41]  url https://weibo.com/7325335364/info job info error
+[2020-02-24 17:27:22]  url https://weibo.com/6165191368/info job info error
+[2020-02-24 17:41:44]  url https://weibo.com/6225761646/info job info error
+[2020-02-24 17:42:41]  url https://weibo.com/2266172041/info job info error
+[2020-02-24 17:50:08]  url https://weibo.com/7336697668/info job info error
+[2020-02-24 17:58:01]  Something wrong when getting this url:https://weibo.com/3051743267/info, 'html'
+[2020-02-24 19:37:38]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-24 19:37:41]  Error happened when insert id=1680212132 into database: (1406, "Data too long for column 'high_school' at row 1")
+[2020-02-24 19:38:11]  url https://weibo.com/5014846080/info job info error
+[2020-02-24 19:38:18]  Something wrong when getting this url:https://weibo.com/2095918724/info, 'html'
+[2020-02-24 19:39:18]  url https://weibo.com/7146147302/info job info error
+[2020-02-24 19:41:22]  url https://weibo.com/2601443483/info job info error
+[2020-02-24 19:42:38]  Something wrong when getting this url:https://weibo.com/7351816434/info, 'html'
+[2020-02-24 19:46:37]  url https://weibo.com/6550529275/info job info error
+[2020-02-24 19:46:44]  Something wrong when getting this url:https://weibo.com/5224942988/info, 'html'
+[2020-02-24 19:48:48]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-24 19:53:12]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-24 19:53:15]  Error happened when insert id=1680212132 into database: (1406, "Data too long for column 'high_school' at row 1")
+[2020-02-24 19:54:10]  url https://weibo.com/6408848935/info job info error
+[2020-02-24 19:54:33]  url https://weibo.com/6199113000/info job info error
+[2020-02-24 19:58:23]  Something wrong when getting this url:https://weibo.com/6607121989/info, 'html'
+[2020-02-24 20:04:11]  Something wrong when getting this url:https://weibo.com/6124316095/info, 'html'
+[2020-02-24 20:04:56]  Something wrong when getting this url:https://weibo.com/2798323113/info, 'html'
+[2020-02-24 20:06:42]  Something wrong when getting this url:https://weibo.com/6554862847/info, 'html'
+[2020-02-24 20:11:11]  url https://weibo.com/6581585441/info job info error
+[2020-02-24 20:14:39]  url https://weibo.com/3807444254/info job info error
+[2020-02-24 20:15:21]  url https://weibo.com/3612431182/info job info error
+[2020-02-24 20:16:37]  url https://weibo.com/6962969552/info job info error
+[2020-02-24 20:22:26]  url https://weibo.com/1908524317/info job info error
+[2020-02-24 20:22:26]  url https://weibo.com/1908524317/info job info error
+[2020-02-24 20:22:26]  url https://weibo.com/1908524317/info job info error
+[2020-02-24 20:22:56]  url https://weibo.com/6577514059/info job info error
+[2020-02-24 20:29:35]  url https://weibo.com/7200410367/info job info error
+[2020-02-24 20:34:12]  url https://weibo.com/1885187393/info job info error
+[2020-02-24 20:34:41]  url https://weibo.com/2773120331/info job info error
+[2020-02-24 20:36:34]  url https://weibo.com/5710906301/info job info error
+[2020-02-24 20:37:45]  url https://weibo.com/2212643325/info job info error
+[2020-02-24 20:40:07]  Something wrong when getting this url:https://weibo.com/5131581962/info, 'html'
+[2020-02-24 20:45:06]  url https://weibo.com/5906186879/info job info error
+[2020-02-24 20:45:06]  url https://weibo.com/5906186879/info job info error
+[2020-02-24 20:50:28]  url https://weibo.com/2654765905/info job info error
+[2020-02-24 20:55:50]  url https://weibo.com/2211844877/info job info error
+[2020-02-24 20:55:55]  url https://weibo.com/5836027351/info job info error
+[2020-02-24 20:58:08]  url https://weibo.com/6051936502/info job info error
+[2020-02-24 21:01:34]  url https://weibo.com/1969577845/info job info error
+[2020-02-24 21:01:38]  Something wrong when getting this url:https://weibo.com/5404522366/info, 'html'
+[2020-02-24 21:06:10]  url https://weibo.com/2192632811/info job info error
+[2020-02-24 21:10:48]  url https://weibo.com/6073965440/info job info error
+[2020-02-24 21:10:48]  url https://weibo.com/6073965440/info job info error
+[2020-02-24 21:15:55]  url https://weibo.com/5661063428/info job info error
+[2020-02-24 21:20:17]  url https://weibo.com/6045230003/info job info error
+[2020-02-24 21:20:22]  url https://weibo.com/3329028984/info job info error
+[2020-02-24 21:21:06]  Something wrong when getting this url:https://weibo.com/2741022995/info, 'html'
+[2020-02-24 21:21:10]  Something wrong when getting this url:https://weibo.com/2741022995/info, 'html'
+[2020-02-24 21:22:27]  url https://weibo.com/6484167959/info job info error
+[2020-02-24 21:23:09]  Something wrong when getting this url:https://weibo.com/2772506143/info, 'html'
+[2020-02-24 21:27:23]  url https://weibo.com/1855709955/info job info error
+[2020-02-24 21:30:34]  Something wrong when getting this url:https://weibo.com/6540039134/info, 'html'
+[2020-02-24 21:31:05]  url https://weibo.com/6284918098/info job info error
+[2020-02-24 21:31:41]  url https://weibo.com/2036723764/info job info error
+[2020-02-24 21:33:23]  Something wrong when getting this url:https://weibo.com/6554969622/info, 'html'
+[2020-02-24 21:34:30]  url https://weibo.com/6802447460/info job info error
+[2020-02-24 21:34:51]  url https://weibo.com/5790285929/info job info error
+[2020-02-24 21:41:08]  Something wrong when getting this url:https://weibo.com/5863180790/info, 'html'
+[2020-02-24 21:42:38]  Something wrong when getting this url:https://weibo.com/5480334648/info, 'html'
+[2020-02-24 21:42:56]  url https://weibo.com/5532297242/info job info error
+[2020-02-24 21:43:40]  url https://weibo.com/1913875262/info job info error
+[2020-02-24 21:45:38]  Something wrong when getting this url:https://weibo.com/5314482692/info, 'html'
+[2020-02-24 21:46:35]  url https://weibo.com/6963057231/info job info error
+[2020-02-24 21:51:49]  url https://weibo.com/5752341442/info job info error
+[2020-02-24 21:55:40]  url https://weibo.com/1891665034/info job info error
+[2020-02-24 21:59:34]  url https://weibo.com/2916853313/info job info error
+[2020-02-24 22:00:46]  url https://weibo.com/6363399328/info job info error
+[2020-02-24 22:02:29]  url https://weibo.com/5418555719/info job info error
+[2020-02-24 22:05:45]  Something wrong when getting this url:https://weibo.com/5342523773/info, 'html'
+[2020-02-24 22:10:08]  url https://weibo.com/6066020720/info job info error
+[2020-02-24 22:10:39]  Error happened when insert id=1748908662 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-24 22:16:12]  Something wrong when getting this url:https://weibo.com/6467381282/info, 'html'
+[2020-02-24 22:20:40]  Something wrong when getting this url:https://weibo.com/5745615041/info, 'html'
+[2020-02-24 22:28:10]  url https://weibo.com/3396745492/info job info error
+[2020-02-24 22:28:10]  url https://weibo.com/3396745492/info job info error
+[2020-02-24 22:28:52]  url https://weibo.com/6128941730/info job info error
+[2020-02-24 22:31:43]  url https://weibo.com/1972942517/info job info error
+[2020-02-24 22:36:38]  Something wrong when getting this url:https://weibo.com/5737475126/info, 'html'
+[2020-02-25 11:35:43]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-25 11:35:45]  Error happened when insert id=1680212132 into database: (1406, "Data too long for column 'high_school' at row 1")
+[2020-02-25 11:54:08]  url https://weibo.com/3184399190/info job info error
+[2020-02-25 11:57:08]  url https://weibo.com/6877145706/info job info error
+[2020-02-25 12:11:49]  url https://weibo.com/5734472195/info job info error
+[2020-02-25 12:19:08]  url https://weibo.com/6561205159/info job info error
+[2020-02-25 12:24:38]  Something wrong when getting this url:https://weibo.com/5527887495/info, 'html'
+[2020-02-25 12:35:13]  url https://weibo.com/5110689551/info job info error
+[2020-02-25 12:37:16]  url https://weibo.com/5371646095/info job info error
+[2020-02-25 12:41:36]  url https://weibo.com/5300380280/info job info error
+[2020-02-25 12:42:17]  url https://weibo.com/5901324991/info job info error
+[2020-02-25 12:42:40]  Something wrong when getting this url:https://weibo.com/5669744220/info, 'html'
+[2020-02-26 10:16:36]  Error happened when insert id=1255595687 into database: (1406, "Data too long for column 'job' at row 1")
+[2020-02-26 10:16:40]  Error happened when insert id=1680212132 into database: (1406, "Data too long for column 'high_school' at row 1")
+[2020-02-26 10:20:31]  Something wrong when getting this url:https://weibo.com/5639181703/info, 'html'
+[2020-02-26 10:21:09]  Something wrong when getting this url:https://weibo.com/6035936991/info, 'html'
+[2020-02-26 10:25:37]  Something wrong when getting this url:https://weibo.com/5635774440/info, 'html'
+[2020-02-26 10:27:41]  Something wrong when getting this url:https://weibo.com/5081452638/info, 'html'
+[2020-02-26 10:35:35]  Something wrong when getting this url:https://weibo.com/5613781754/info, 'html'
+[2020-02-26 10:38:40]  url https://weibo.com/6898119141/info job info error
+[2020-02-26 10:39:28]  url https://weibo.com/2116112631/info job info error
+[2020-02-26 10:44:14]  Something wrong when getting this url:https://weibo.com/7211355049/info, 'html'
+[2020-02-26 10:46:27]  url https://weibo.com/7331493402/info job info error
+[2020-02-26 10:56:08]  Something wrong when getting this url:https://weibo.com/5886286551/info, 'html'
+[2020-02-26 10:59:48]  url https://weibo.com/6070305597/info job info error
+[2020-02-26 11:05:24]  url https://weibo.com/5706485385/info job info error
+[2020-02-26 11:11:18]  Something wrong when getting this url:https://weibo.com/3047675393/info, 'html'
+[2020-02-26 11:11:25]  url https://weibo.com/3929990051/info job info error
+[2020-02-26 11:18:56]  url https://weibo.com/6324308445/info job info error
+[2020-02-26 11:20:40]  Something wrong when getting this url:https://weibo.com/3297329070/info, 'html'
+[2020-02-26 11:23:30]  url https://weibo.com/1513489751/info job info error
+[2020-02-26 11:23:42]  Something wrong when getting this url:https://weibo.com/5833825697/info, 'html'
+[2020-02-26 11:29:00]  url https://weibo.com/2889354762/info job info error
+[2020-02-26 11:33:21]  url https://weibo.com/5021769362/info job info error
+[2020-02-26 11:38:47]  url https://weibo.com/5912034243/info job info error
+[2020-02-26 11:44:05]  url https://weibo.com/2635894423/info job info error
+[2020-02-26 11:44:15]  url https://weibo.com/2609212067/info job info error
+[2020-02-26 11:48:06]  Something wrong when getting this url:https://weibo.com/1416873710/info, 'html'
+[2020-02-26 11:48:09]  Something wrong when getting this url:https://weibo.com/1416873710/info, 'html'
+[2020-02-26 11:52:03]  url https://weibo.com/7330923495/info job info error
+[2020-02-26 11:52:30]  url https://weibo.com/1811477973/info job info error
+[2020-02-26 11:58:59]  url https://weibo.com/1789553151/info job info error
+[2020-02-26 11:58:59]  url https://weibo.com/1789553151/info job info error
+[2020-02-26 12:01:59]  Something wrong when getting this url:https://weibo.com/7173796801/info, 'html'
+[2020-02-26 12:12:52]  url https://weibo.com/2400602311/info job info error
+[2020-02-26 12:15:38]  Something wrong when getting this url:https://weibo.com/5857229509/info, 'html'
+[2020-02-26 12:16:25]  url https://weibo.com/6052934904/info job info error
+[2020-02-26 12:18:12]  Something wrong when getting this url:https://weibo.com/3769163495/info, 'html'
+[2020-02-26 12:18:39]  Something wrong when getting this url:https://weibo.com/5186328622/info, 'html'
+[2020-02-26 12:18:47]  Something wrong when getting this url:https://weibo.com/5356193797/info, 'html'
+[2020-02-26 12:20:09]  Something wrong when getting this url:https://weibo.com/2246822455/info, 'html'
+[2020-02-26 12:21:17]  url https://weibo.com/5661428833/info job info error
+[2020-02-26 12:21:58]  url https://weibo.com/1953780915/info job info error
+[2020-02-26 12:26:05]  Something wrong when getting this url:https://weibo.com/6169503067/info, 'html'
+[2020-02-26 12:36:38]  Something wrong when getting this url:https://weibo.com/1879126670/info, 'html'
+[2020-02-26 12:37:03]  url https://weibo.com/3277939754/info job info error
+[2020-02-26 12:42:11]  Something wrong when getting this url:https://weibo.com/7319814350/info, 'html'
+[2020-02-26 12:42:32]  Something wrong when getting this url:https://weibo.com/1800391164/info, 'html'
+[2020-02-26 12:44:16]  url https://weibo.com/6596103270/info job info error
+[2020-02-26 12:52:27]  url https://weibo.com/1957982897/info job info error
+[2020-02-26 12:52:43]  url https://weibo.com/1988967651/info job info error
+[2020-02-26 12:52:43]  url https://weibo.com/1988967651/info job info error
+[2020-02-26 13:06:30]  url https://weibo.com/6347021597/info job info error
+[2020-02-26 13:11:18]  Something wrong when getting this url:https://weibo.com/1828043093/info, 'html'
+[2020-02-26 13:13:17]  url https://weibo.com/5233837495/info job info error
+[2020-02-26 13:14:45]  url https://weibo.com/5727002038/info job info error
+[2020-02-26 13:15:00]  url https://weibo.com/6470796853/info job info error
+[2020-02-26 13:15:41]  Something wrong when getting this url:https://weibo.com/7230841304/info, 'html'
+[2020-02-26 13:16:41]  url https://weibo.com/5958548254/info job info error
+[2020-02-26 13:17:05]  url https://weibo.com/5602791810/info job info error
+[2020-02-26 13:19:23]  Something wrong when getting this url:https://weibo.com/5225182051/info, 'html'
+[2020-02-26 13:21:34]  Something wrong when getting this url:https://weibo.com/2675179364/info, 'html'
+[2020-02-26 13:25:48]  Something wrong when getting this url:https://weibo.com/7029939661/info, 'html'
+[2020-02-26 13:30:04]  url https://weibo.com/5380556987/info job info error
+[2020-02-26 13:43:20]  url https://weibo.com/1354569940/info job info error
+[2020-02-26 13:47:14]  url https://weibo.com/3941438567/info job info error
+[2020-02-26 13:48:12]  url https://weibo.com/7214684548/info job info error
+[2020-02-26 13:48:16]  Something wrong when getting this url:https://weibo.com/3829117003/info, 'html'
+[2020-02-26 13:48:32]  url https://weibo.com/2081810614/info job info error
+[2020-02-26 13:50:44]  Something wrong when getting this url:https://weibo.com/6943209844/info, 'html'
+[2020-02-26 13:51:45]  Something wrong when getting this url:https://weibo.com/7317322675/info, 'html'
+[2020-02-26 13:56:45]  Something wrong when getting this url:https://weibo.com/6859081653/info, 'html'

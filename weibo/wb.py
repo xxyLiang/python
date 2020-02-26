@@ -1,10 +1,14 @@
-# from selenium import webdriver
-from requestium import Session, Keys
+# coding: utf-8
+from requestium import Session
 from lxml import etree
 import time
 import datetime
 import re
 import traceback
+import pymysql
+import pickle
+import random
+import json
 
 
 class weibo:
@@ -16,61 +20,123 @@ class weibo:
         self.headers = {
             'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36"
         }
-        self.login()
-
+        self.db = pymysql.connect("localhost", "root", "admin", "weibo", charset='utf8mb4')
+        self.cursor = self.db.cursor()
+        try:
+            with open("cookies2", 'rb') as f:
+                self.p.cookies = pickle.load(f)
+        except FileNotFoundError:
+            print("Cookies Not Exist, please login first.")
 
     def login(self):
         try:
-            self.p.driver.get('http://weibo.cn')
+            self.p.driver.get('https://weibo.cn')
             time.sleep(1)
             self.p.driver.ensure_element_by_link_text("登录").click()
             time.sleep(2)
             username = self.p.driver.ensure_element_by_css_selector('#loginName')
             username.clear()
-            username.send_keys('416236328@qq.com')
+            username.send_keys('l.iangxiyiliangxiyi@gmail.com')
             time.sleep(2)
             password = self.p.driver.ensure_element_by_css_selector('#loginPassword')
-            password.send_keys('651133439weibo')
+            password.send_keys('651133439a')
             self.p.driver.ensure_element_by_css_selector('#loginAction').click()
-            print("登录成功")
+            time.sleep(2)
+            self.p.driver.get('https://www.weibo.com')
+            time.sleep(2)
+            self.p.driver.get('https://weibo.cn')
             time.sleep(3)
             self.p.transfer_driver_cookies_to_session()
+            with open("cookies2", 'wb') as f:
+                pickle.dump(self.p.cookies, f)
+            print("登录成功")
         except():
             print('登录失败')
 
+    # 获取某一话题下的热门微博信息
+    def get_weibo_info(self, keyword):
+        if len(self.p.cookies.keys()) == 0:
+            print("Have not login in!!!")
+            return -1
+        tree = self.handle_url('https://s.weibo.com/weibo?q={}&xsort=hot&suball=1&Refer=g'.format(keyword))
+        not_hot = 0
+        error_list = []
+        while True:
+            cards = tree.xpath('//div[@class="card-wrap"][@action-type="feed_list_item"]')
+            for card in cards:
+                mid = card.attrib['mid']
+                num_tag = card.findall('div/div[@class="card-act"]/ul/li/a')
+                num = re.search(r'\d+', num_tag[1].text)
+                repost = int(num.group()) if num is not None else 0
+                num = re.search(r'\d+', num_tag[2].text)
+                comment = int(num.group()) if num is not None else 0
+                num = re.search(r'\d+', num_tag[3].xpath('string()'))
+                like = int(num.group()) if num is not None else 0
+                if comment < 20:
+                    not_hot += 1
+                    if not_hot < 5:
+                        continue
+                    else:
+                        break
 
-    ### 获取某一页微博的评论
-    def getcomment(self, url):  ## 功能要求：最好把回复的指向也弄上，评论的赞还没弄
+                content = card.findall('div/div[@class="card-feed"]//p[@class="txt"]')[-1].xpath('string()').strip()
+                content = re.sub('收起全文d', '', content)
+
+                t_tag = card.find('div/div[@class="card-feed"]//p[@class="from"]/a')
+                send_time = self.handle_time_string(t_tag.text.strip())
+
+                info = re.search(r'com/(\d+)/(\w+)?', t_tag.attrib['href'])
+                sender = info.group(1)
+                weibo_id = info.group(2)
+                url = 'https://weibo.cn/comment/%s?uid=%s' % (weibo_id, sender)
+                not_hot = 0
+
+                sql = "insert into weibo_info(mid, keyword, sender, identifier_code, url, " \
+                      "content, dat, reposts, comments, likes) " \
+                      "values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                items = (mid, keyword, sender, weibo_id, url, content, send_time, repost, comment, like)
+                try:
+                    self.cursor.execute(sql, items)
+                    self.db.commit()
+                    print("finish getting weibo: %s / %s" % (sender, weibo_id))
+                except Exception as e:
+                    self.db.rollback()
+                    print("Something wrong with %s / %s while getting weibo" % (sender, weibo_id))
+                    error_list.append({"sender": sender, "id": weibo_id, "message": str(e)})
+
+            nextpage = tree.xpath('//div[@class="m-page"]//a[@class="next"]')
+            if not_hot >= 5 or (len(nextpage) == 0):
+                break
+            nextpage_url = 'https://s.weibo.com' + nextpage[0].attrib['href']
+            tree = self.handle_url(nextpage_url)
         try:
-            res = self.handle_url(url)
-            tree = etree.HTML(res.content)
+            with open('log.txt', 'a') as f:
+                f.writelines("\n\n%s\n###################################\n" % keyword)
+                for i in error_list:
+                    f.writelines("%s: %s / %s : %s\n" %
+                        (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i['sender'], i['id'], i['message']))
+        except:
+            traceback.print_exc()
+        return 0
 
-            weibo_uid = tree.xpath('//div[@id="M_"]/div/a/@href')[0].split('/')[-1]
-            weibo_content = ' '.join(tree.xpath('//div[@id="M_"]/div/span[@class="ctt"]/text()'))
-
-            ### 处理时间
-            t = tree.xpath('//div[@id="M_"]//span[@class="ct"]/text()')[0]  # 匹配时间字符串
-            weibo_time = self.handle_time_string(t)
-
-            pl = tree.xpath('//span[@class="pms"]')[0]
-            num = re.search(r'评论\[(\d+)\]', pl.text)
-            weibo_comment = int(num.group(1)) if num is not None else 0
-            num = re.search(r'转发\[(\d+)\]', pl.getprevious().find('a').text)
-            weibo_repost = int(num.group(1)) if num is not None else 0
-            num = re.search(r'赞\[(\d+)\]', pl.getnext().find('a').text)
-            weibo_like = int(num.group(1)) if num is not None else 0
-            print("%s\n%s\n评论%d 转发%d 赞%d\n" % (weibo_uid, weibo_content, weibo_comment, weibo_repost,
-                                               weibo_like), weibo_time, '\n\n\n')
-
+    # 获取某一页微博的评论
+    def getcomment(self, url):
+        if len(self.p.cookies.keys()) == 0:
+            print("Have not login in!!!")
+            return -1
+        try:
+            tree = self.handle_url(url)
+            temp = tree.xpath('//div[@id="pagelist"]//input[@value="跳页"]')[0].tail
+            total_page = int(re.search(r'1/(\d+)页', temp).group(1))
+            if total_page > 50:
+                total_page = 50
             page = 1
             while True:
-                time.sleep(1)
                 comment_tags = tree.xpath('//div[@class="c"][starts-with(@id,"C_")]')
                 for tag in comment_tags:
                     reply_to = ''
-                    temp = re.search(r'\d+', tag.find('a').attrib['href'])
-                    uid = temp.group() if temp is not None else re.search(r'/(.+)', tag.find('a').attrib['href']).group(
-                        1)
+                    cid = re.search(r'\d+', tag.attrib['id']).group()
+                    user_page = tag.find('a').attrib['href']
                     r_time = self.handle_time_string(tag.find('span[@class="ct"]').text)
                     try:
                         like = int(re.search(r'\d+', tag.find('span[@class="cc"]/a').text).group())
@@ -79,11 +145,13 @@ class weibo:
 
                     ## 回复对象
                     ctt = tag.find('span[@class="ctt"]')
-                    if ctt.text is not None and "回复" in ctt.text and re.match('@', ctt.find(
-                            'a').text) is not None:  ##双重判断是不是回复
-                        reply_to = re.search(r'@(.+)', ctt.find('a').text).group(1).strip()
+                    try:
+                        if ctt.text is not None and "回复" in ctt.text and re.match('@', ctt.find('a').text) is not None:
+                            reply_to = re.search(r'@(.+)', ctt.find('a').text).group(1).strip()
+                    except:
+                        traceback.print_exc()
 
-                    ##评论的表情
+                    ## 评论的表情
                     content_biaoqing = ''
                     for ele in tag.iterdescendants():
                         if (ele.tag == 'img' and 'alt' in ele.keys() and re.search(r'\[.+\]',
@@ -91,37 +159,38 @@ class weibo:
                             ## 标签是img，有alt，且alt内容满足[  ]
                             content_biaoqing += ele.attrib['alt']
 
-                    ##评论的文字
+                    ## 评论的文字
                     etree.strip_elements(tag, 'a', with_tail=False)  ### 开始删标签
                     for c in tag.xpath('span[@class!="ctt"]'):
                         tag.remove(c)
-                    content_word = re.sub(r':', '', tag.xpath('string()').replace(' ', ''), count=1)
-                    if ("回复:" in content_word):
-                        content_word = re.sub('回复:', '', content_word)
+                    content_word = re.sub(':', '', tag.xpath('string()').replace(' ', ''), count=1)
+                    content_word = re.sub('回复:', '', content_word)
 
-                    print("%s\n%s%s\n%s\t赞%d\nreply_to %s\n\n" % (
-                    uid, content_word, content_biaoqing, r_time, like, reply_to))
+                    items = [cid, page, user_page, content_word, content_biaoqing, reply_to, r_time, like]
+                    yield items
 
-                a = tree.xpath('//div[@id="pagelist"]/form/div/a')  ## 可能根本没有翻页按钮
-                if len(a) != 0 and a[0].text == '下页' and page < 50:
-                    url = 'https://weibo.cn' + a[0].attrib['href']
-                    res = self.handle_url(url)
-                    tree = etree.HTML(res.content)
+                if page < total_page:
                     page += 1
+                    tree = self.handle_url(url + "&page=%d" % page)
                 else:
                     break
         except Exception:
             traceback.print_exc()
 
-
     def handle_url(self, url):
-        res = self.p.get(url, headers=self.headers)
-        res.raise_for_status()
-        res.encoding = res.apparent_encoding
-        return res
+        try:
+            res = self.p.get(url, headers=self.headers)
+            res.raise_for_status()
+            res.encoding = "UTF-8"
+            tree = etree.HTML(res.content)
+        except:
+            traceback.print_exc()
+            return None
+        time.sleep(1.5 + random.random())
+        return tree
 
-
-    def handle_time_string(self, t):
+    @staticmethod
+    def handle_time_string(t):
         try:
             if "分钟前" in t:
                 min = int(re.search(r'(\d+)分钟前', t).group(1))
@@ -129,7 +198,7 @@ class weibo:
             elif "今天" in t:
                 dt = datetime.date.today().strftime("%Y-%m-%d") + re.search(r'今天(\s\d{2}:\d{2})', t).group(1)
             elif "月" in t:
-                tt = re.search(r'(\d{2})月(\d{2})日(\s+\d{2}:\d{2}).+', t)
+                tt = re.search(r'(\d{2})月(\d{2})日(\s+\d{2}:\d{2})', t)
                 dt = datetime.date.today().strftime("%Y-") + tt.group(1) + '-' + tt.group(2) + tt.group(3)
             else:
                 dt = re.search(r'\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}', t).group()
@@ -137,34 +206,203 @@ class weibo:
             dt = '0000-00-00 00:00'
         return dt
 
+    def run_getcomment(self):
+        total_count = 0
+        sql = 'select `mid`,`url` from `weibo_info` where mid not in (select mid from finished_weibo)'
+        self.cursor.execute(sql)
+        li = self.cursor.fetchall()
+        sql = "insert into comment_info(cid, page, user_page, content_words, content_bq, reply_to, dat, likes, mid) " \
+              "values(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        for i in li:
+            count = 0
+            for items in self.getcomment(i[1]):
+                items.append(i[0])
+                try:
+                    self.cursor.execute(sql, items)
+                    self.db.commit()
+                    count += 1
+                    total_count += 1
+                except Exception as e:
+                    self.db.rollback()
+            print('get comment of mid=%s have finished, %d comments are stored, %d in total.' % (i[0], count, total_count))
+            try:
+                self.cursor.execute('insert into finished_weibo values(%s)', [i[0]])
+                self.db.commit()
+            except:
+                self.db.rollback()
+            try:
+                with open('log.txt', 'a') as f:
+                    f.writelines("weibo mid=%s get %d comments\n" % (i[0], count))
+            except:
+                traceback.print_exc()
 
-# ### selenium搜索
-# try:
-#     p.driver.ensure_element_by_link_text("搜索").click()
-#     time.sleep(2)
-#     input_box = p.driver.ensure_element_by_name("keyword")
-#     input_box.clear()
-#     input_box.send_keys("砍医生")
-#     time.sleep(1)
-#     p.driver.ensure_element_by_name("smblog").click()   # 搜微博
-#     # p.driver.ensure_element_by_name("suser").click()   # 找人
-#     # p.driver.ensure_element_by_name("stag").click()   # 搜标签
+    def run_get_weibo(self):
+        sql = 'select `keyword` from `keywords`'
+        self.cursor.execute(sql)
+        li = self.cursor.fetchall()
+        for i in li:
+            self.get_weibo_info(i[0])
+
+    def handle_user_page(self, url):
+        translate_dic = {'昵称：': 'nickname', '所在地：': 'location', '性别：': 'gender',
+                         '生日：': 'birthday', '简介：': 'intro', '注册时间：': 'register_date',
+                         '大学：': 'university', '高中：': 'high_school', '海外：': 'abroad',
+                         }
+        tree = self.handle_url(url)
+        if tree is None:
+            return []
+        scripts = tree.xpath('script')
+        info = {}
+        for s in scripts:
+            if s.text is None or re.match(r'FM\.view', s.text) is None:
+                continue
+            try:
+                text = s.text.strip(';').strip(')').strip('FM.view(')
+                j = json.loads(text)
+                if j['domid'] == 'Pl_Core_T8CustomTriColumn__53':   # 关注 粉丝 微博量
+                    s_tree = etree.HTML(j['html'])
+                    table = s_tree.xpath('//table[@class="tb_counter"]//td//strong')
+                    info['following'] = int(table[0].text)
+                    info['follower'] = int(table[1].text)
+                    info['weibo'] = int(table[2].text)
+                elif j['domid'] == 'Pl_Official_PersonalInfo__57':  # 个人信息
+                    s_tree = etree.HTML(j['html'])
+                    cards = s_tree.xpath('//div[@class="WB_cardwrap S_bg2"]')
+                    for card in cards:
+                        card_name = card.find('div//h2').text
+                        if card_name == "基本信息":
+                            li = card.xpath('div//li')
+                            for i in li:
+                                if i.xpath('span')[0].text in translate_dic.keys():
+                                    info[translate_dic[i.xpath('span')[0].text]] = i.xpath('span')[1].text.strip()
+                        elif card_name == "教育信息":
+                            li = card.xpath('div//li')
+                            for i in li:
+                                if i.xpath('span')[0].text in translate_dic.keys():
+                                    school = i.find('span/a').text  # 注意学校是否都是链接
+                                    info[translate_dic[i.find('span').text]] = school
+                        elif card_name == "标签信息":
+                            li = card.xpath('div//li/span[2]/a/span')
+                            tag_list = []
+                            for i in li:
+                                tag_list.append(i.tail.strip())
+                            info['tag'] = '/'.join(tag_list)
+                        elif card_name == "工作信息":
+                            spans = card.xpath('div//li/span[@class="pt_detail"]')
+                            jobs = []
+                            for s in spans:
+                                try:
+                                    a = s.find('a')
+                                    job = a.text
+                                    if a.tail is not None:
+                                        job += a.tail.strip()
+                                    brs = s.xpath('br')
+                                    for br in brs:
+                                        job += ('-' + br.tail.strip())
+                                    jobs.append(job)
+                                except:
+                                    with open('log_user.txt', 'a') as f:
+                                        f.writelines("[%s]  url %s job info error\n" %
+                                                     (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), url))
+                            info['job'] = '/'.join(jobs)
+            except Exception as e:
+                traceback.print_exc()
+                with open('log_user.txt', 'a') as f:
+                    f.writelines("[%s]  Something wrong when getting this url:%s, %s\n" %
+                                 (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), url, str(e)))
+                return []
+
+        return info
+
+    def run_get_user(self):
+        with open('cookies', 'rb') as f:
+            self.p.cookies = pickle.load(f)
+        count = 0
+        error_count = 0
+        sql = "select distinct user_page from `comment_info` " \
+              "where user_page not in (select user_page from finished_user) and user_page like'/u/%'"
+        total = self.cursor.execute(sql)
+        li = self.cursor.fetchall()
+        for i in li:
+            id = re.search(r'\d+', i[0]).group()
+            url = 'https://weibo.com/' + id + '/info'
+            info = self.handle_user_page(url)
+            if len(info) < 5:
+                info = self.handle_user_page(url)
+                if len(info) < 5:
+                    try:
+                        self.cursor.execute("insert into error_user values(%s)", i[0])
+                        self.db.commit()
+                        error_count += 1
+                    except:
+                        self.db.rollback()
+                    if error_count == 5:
+                        break
+                    continue
+            info['id'] = id
+            info['user_page'] = i[0]
+
+            blanks = (len(info) * " %s,").strip(',')
+            sql = "insert into user_info("
+            item = []
+            for a in info:
+                sql += (a + ",")
+                item.append(info[a])
+            sql = sql.strip(',') + ") values(" + blanks + ")"
+            try:
+                self.cursor.execute(sql, item)
+                self.db.commit()
+                error_count = 0
+                count += 1
+                print("user id=%s finish, some info here: %s / %s , %d user(s) finish, %d left" %
+                      (info['id'], info['nickname'], info['gender'], count, total-count))
+            except Exception as e:
+                self.db.rollback()
+                with open('log_user.txt', 'a') as f:
+                    f.writelines("[%s]  Error happened when insert id=%s into database: %s\n" %
+                        (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), info['id'], str(e)))
+
+    def transfer_id(self):
+        count = 0
+        sql = "SELECT distinct user_page FROM `comment_info` where user_page not like '/u/%' " \
+              "and user_page not in (select user_page from error_user)"
+        try:
+            total = self.cursor.execute(sql)
+            li = self.cursor.fetchall()
+        except:
+            traceback.print_exc()
+            for i in li:
+                tree = self.handle_url('https://weibo.cn' + i[0])
+                try:
+                    href = tree.xpath('//div[@class="ut"]/a[2]')[0].attrib['href']
+                    id = '/u' + re.search(r'(/\d+)/info', href).group(1)
+                except:
+                    self.cursor.execute("insert into error_user values(%s)", i[0])
+                    self.db.commit()
+                    continue
+                try:
+                    sql2 = 'update comment_info set user_page=%s where user_page=%s'
+                    self.cursor.execute(sql2, [id, i[0]])
+                    self.db.commit()
+                    count += 1
+                    if count % 10 == 0:
+                        print("finish transfer %d user ids, %d left." % (count, total-count))
+                except:
+                    self.db.rollback()
 
 
-# ### request搜索
-# def search(keyword):
-#     try:
-#         p.transfer_driver_cookies_to_session()
-#         res = p.get('https://weibo.cn/search/mblog/?keyword={}&sort=hot'.format(keyword), headers=headers)
-#         res.raise_for_status()
-#         res.encoding = res.apparent_encoding
-#         page_text = res.text
-#         pass
-
-
-
-
-
-
-
-
+urls = [
+    'https://weibo.com/6435489852/info',
+    'https://weibo.com/3196470221/info',
+    'https://weibo.com/3880460244/info',
+    'https://weibo.com/2085387711/info',
+    'https://weibo.com/5819071204/info',
+    'https://weibo.com/1763709194/info',
+    'https://weibo.com/1696194013/info',
+    'https://weibo.com/5672469981/info',
+    'https://weibo.com/3483714255/info',
+    'https://weibo.com/6710935744/info',
+    'https://weibo.com/1851532085/info',
+    'https://weibo.com/6248697907/info',
+    'https://weibo.com/5999976726/info',
+]
