@@ -186,7 +186,7 @@ class weibo:
         except:
             traceback.print_exc()
             return None
-        time.sleep(1.5 + random.random())
+        time.sleep(1)
         return tree
 
     @staticmethod
@@ -389,6 +389,48 @@ class weibo:
                         print("finish transfer %d user ids, %d left." % (count, total-count))
                 except:
                     self.db.rollback()
+
+    def verify_info(self):
+        sql = "select user_page from user_info where user_page not in (select user_page from finished_user)"
+        self.cursor.execute(sql)
+        result = self.cursor.fetchall()
+        count = 0
+        total_count = 0
+        temp = []
+        for r in result:
+            url = "https://weibo.cn" + r[0]
+            try:
+                tree = self.handle_url(url)
+                span = tree.xpath("//div[@class='ut']/span[@class='ctt'][1]")
+                if len(span) == 0:
+                    self.cursor.execute("insert into error_user values(%s)", [r[0]])
+                    self.db.commit()
+                    print('error span, user=%s' % r[0])
+                    continue
+                verify = span[0].find('img[@alt="V"]')
+                member = span[0].find('a/img[@alt="M"]')
+                verified = 1 if verify is not None else 0
+                membered = 1 if member is not None and re.search('donate_btn_s', member.attrib['src']) is not None else 0
+                temp.append((verified, membered, r[0]))
+                count += 1
+            except:
+                traceback.print_exc()
+                continue
+            if count == 30:
+                try:
+                    for i in temp:
+                        sql2 = "update user_info set verified=%s, member=%s where user_page=%s"
+                        sql3 = "insert into finished_user values(%s)"
+                        self.cursor.execute(sql2, i)
+                        self.cursor.execute(sql3, [i[2]])
+                    self.db.commit()
+                except:
+                    self.db.rollback()
+                finally:
+                    total_count += count
+                    count = 0
+                    temp = []
+                    print("finish %d users" % total_count)
 
 
 urls = [
