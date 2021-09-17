@@ -19,10 +19,12 @@ ua = UserAgent()
 # 饮食与运动
 # base = 'https://bbs.tnbz.com/forum.php?mod=forumdisplay&fid=57&orderby=dateline&orderby=dateline&filter=author&page=%d'
 # 心情驿站
-base = 'https://bbs.tnbz.com/forum.php?mod=forumdisplay&fid=9&orderby=dateline&orderby=dateline&filter=author&page=%d'
+# base = 'https://bbs.tnbz.com/forum.php?mod=forumdisplay&fid=9&orderby=dateline&orderby=dateline&filter=author&page=%d'
+# 新人
+base = 'https://bbs.tnbz.com/forum.php?mod=forumdisplay&fid=58&orderby=dateline&filter=author&orderby=dateline&page=%d'
 
 sql = 'insert into threads values(' + ('%s,'*14)[:-1] + ')'
-a = [147]
+a = [203]
 
 
 def parse():
@@ -32,7 +34,7 @@ def parse():
     s.mount('http://', HTTPAdapter(max_retries=3))
     s.mount('https://', HTTPAdapter(max_retries=3))
     for page in a:
-    # for page in range(1, 240):   # 2016年1520页左右
+    # for page in range(111, 225):
         time.sleep(2)
         count = 0
         referer = base % (page-1)
@@ -54,6 +56,8 @@ def parse():
                     r = re.search(r'(tid=)(\d+)', thread_url)
                     tid = r.group(2) if r is not None else random_id()      # tid 是主键，匹配不到就随机生成一个
                     title = thread.xpath('.//th/a[@class="s xst"]/text()')[0]
+                    if new_user_thread(title):
+                        continue
                     label_list = thread.xpath('.//th/em/a/text()')
                     label = label_list[0] if len(label_list) > 0 else ''
                     new_user = 1 if len(thread.xpath('.//th/img[@alt="新人帖"]')) > 0 else 0
@@ -62,7 +66,7 @@ def parse():
                     publish_date, last_reply_time = thread.xpath('.//td[@class="by"]/em//text()')
                     replies = thread.xpath('.//td[@class="num"]/a/text()')[0]
                     reads = thread.xpath('.//td[@class="num"]/em/text()')[0]
-                    item = (tid, 4, page, thread_url, title, label, new_user, author_id, author_nickname,
+                    item = (tid, 5, page, thread_url, title, label, new_user, author_id, author_nickname,
                             publish_date, replies, reads, last_reply_time, 0)
                 except Exception as e:
                     traceback.print_exc()
@@ -84,6 +88,17 @@ def parse():
 
 def random_id():
     return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(10))
+
+
+# 辨别格式化的新人报到帖，是格式化的返回True
+def new_user_thread(title):
+    if re.search('新人报道', title) is not None:
+        return True
+    if re.search(r'【报[到道]】', title) is not None:
+        return True
+    if title == "新人报到" or title == "新人晋级":
+        return True
+    return False
 
 
 if __name__ == '__main__':
