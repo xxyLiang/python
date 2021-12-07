@@ -10,14 +10,14 @@ from lda import LDA
 ''' Function: 将句子转化为BERT向量，提取句子特征 '''
 
 # start server
-# bert-serving-start -model_dir chinese_roberta_wwm_ext_L-12_H-768_A-12 -num_worker=1 -port=5206 -port_out=5207
+# bert-serving-start -model_dir chinese_roberta_wwm_ext_L-12_H-768_A-12 -num_worker=1 -port=5206 -port_out=5207 -max_batch_size=32
 
 
 class Feature:
 
     def __init__(self):
         print("Connecting BERT Service...")
-        self.bc = BertClient(port=5206, port_out=5207)
+        self.bc = BertClient(ip='192.168.2.11', port=5206, port_out=5207)
         print("Initiating Sentiment Analysis Module...")
         self.senta = hub.Module(name="senta_lstm")
         self.positive_words = []

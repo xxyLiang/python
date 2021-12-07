@@ -1,8 +1,6 @@
 import numpy as np
 import xgboost
-from sklearn.linear_model import LogisticRegression
 from ensemble_method import DivideEnsembleClassification
-from sklearn.decomposition import PCA
 from extract_feature import Feature
 import pymysql
 import train
@@ -12,6 +10,7 @@ import traceback
 
 db = pymysql.connect(host="localhost", user="root", password="651133439a", database="tmjy", charset='utf8mb4')
 cursor = db.cursor()
+cursor_update = db.cursor()
 
 pca = pickle.load(open('./model/pca.pickle', 'rb'))
 ensemble_SIS = DivideEnsembleClassification(predict_types='SIS')
@@ -49,7 +48,7 @@ def save_to_database(pid, predictions):
     rs = pd.concat([predictions, pid], axis=1)
     try:
         for r in rs.values:
-            cursor.execute("update posts set SIS=%s, PIS=%s, SES=%s, PES=%s, COM=%s where pid=%s", tuple(r))
+            cursor_update.execute("update posts set SIS=%s, PIS=%s, SES=%s, PES=%s, COM=%s where pid=%s", tuple(r))
         db.commit()
     except:
         db.rollback()
@@ -61,7 +60,7 @@ def run(batch_size=16):
 
     total_num = cursor.execute(
         "select pid, is_initiate_post, is_thread_publisher, img_num, content, reply_content "
-        "from posts where SIS is null limit 10")
+        "from posts where SIS is null")
     count = 0
 
     while True:
@@ -86,6 +85,11 @@ def run(batch_size=16):
 
         save_to_database(df.iloc[:, 0], predictions)
 
+        count += len(batch)
+        print('\r[%s%s] %s / %s' %
+              (('#' * int(100 * count / total_num)), ' ' * (100 - int(100 * count / total_num)), count, total_num),
+              end='')
+
 
 if __name__ == '__main__':
-    run()
+    run(32)

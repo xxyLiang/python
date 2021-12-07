@@ -15,7 +15,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import GridSearchCV
-from sklearn.tree import DecisionTreeClassifier
 
 
 def check_sentences(sql_results):
@@ -130,8 +129,8 @@ def xgb(x_train, x_test, y_train, y_test, predict_types, save_model=False):
         'booster': 'gbtree',
         'learning_rate': 0.05,
         'gamma': 0.03,
-        'max_depth': 5,
-        'min_child_weight': 3,
+        'max_depth': 4,
+        'min_child_weight': 2,
         'alpha': 3,
         'lambda': 10,
         'subsample': 0.7,
@@ -168,9 +167,9 @@ def run(force_trans=0, save_model=False):
         df = pd.read_pickle('./model/train_vector.df')
     else:
         df = get_train_vector()
-    smo = SMOTE(random_state=7, sampling_strategy=0.4)
+    smo = SMOTE(random_state=7, sampling_strategy=0.3)
     feature = pca_transform(df)
-    for types in ['PIS']:
+    for types in ['PES']:
         tag = df[types]
         X_train, X_test, y_train, y_test = train_test_split(feature, tag, test_size=0.25, random_state=8)
         ensemble = DivideEnsembleClassification(predict_types=types, retrain=save_model)
@@ -178,8 +177,8 @@ def run(force_trans=0, save_model=False):
         if types in ['SES', 'PES']:
             X_train, y_train = smo.fit_resample(X_train, y_train)
         print("********%s********" % types)
-        # xgb(X_train, X_test, y_train, y_test, types, save_model)
-        run_model(X_train, X_test, y_train, y_test, types, save_model)
+        xgb(X_train, X_test, y_train, y_test, types, save_model)
+        # run_model(X_train, X_test, y_train, y_test, types, save_model)
     # tag = df['PIS']
     # ensemble = DivideEnsembleClassification()
     # feature, _ = ensemble.fit_transform(feature, tag, feature)
@@ -189,4 +188,4 @@ def run(force_trans=0, save_model=False):
 
 
 if __name__ == '__main__':
-    run()
+    run(save_model=True)
