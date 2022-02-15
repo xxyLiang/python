@@ -35,49 +35,109 @@ def mergeSort(arr):
 
 def heapSort(arr):
 
-    def heapify(arr, arrlen, i):
-        l = 2*i
+    def heapify(arr, arrlen, node):   # node是要维护的节点
+        l = 2*node
         r = l+1
-        largest = l if (l <= arrlen-1 and arr[l]>arr[i]) else i
+        largest = l if (l <= arrlen-1 and arr[l]>arr[node]) else node
         largest = r if (r <= arrlen-1 and arr[r]>arr[largest]) else largest
-        if largest != i:
-            arr[i], arr[largest] = arr[largest], arr[i]
+        if largest != node:
+            arr[node], arr[largest] = arr[largest], arr[node]
             heapify(arr, arrlen, largest)
     
-    i = int(len(arr))-1
+    # 自底向上构建最大堆
+    i = len(arr)-1
     while(i >= 0):
         heapify(arr, len(arr), i)
         i -= 1
-    i = len(arr)-1
-    while(i >= 0):
-        arr[0], arr[i] = arr[i], arr[0]
-        heapify(arr, i, 0)
-        i -= 1
+    
+    # 开始提取最大值
+    arrlen = len(arr)-1  # 代表当前数组长度，arr[arrlen:]已排好序，不需再考虑
+    while(arrlen >= 0):
+        arr[0], arr[arrlen] = arr[arrlen], arr[0]     # 此时arr[0]为最大值，交换到数组尾
+        heapify(arr, arrlen, 0)  # 维护根节点的最大堆
+        arrlen -= 1
     return arr
         
 
-def quickSort(arr, l, r):
-    if l >= r:
-        return arr
-    left = l
-    right = r
-    pivot = arr[l]
-    while l < r:
-        while l < r and arr[r] >= pivot:
-            r -= 1
-        arr[l], arr[r] = arr[r], arr[l]
-        while l < r and arr[l] <= pivot:
-            l += 1
-        arr[l], arr[r] = arr[r], arr[l]
-    quickSort(arr, left, l-1)
-    quickSort(arr, l+1, right)
+def quickSort(arr):
+    def partition(arr, l, r):
+        if l >= r:
+            return 0
+        left = l
+        right = r
+        pivot = arr[l]
+        while l < r:
+            while l < r and arr[r] >= pivot:
+                r -= 1
+            arr[l], arr[r] = arr[r], arr[l]
+            while l < r and arr[l] <= pivot:
+                l += 1
+            arr[l], arr[r] = arr[r], arr[l]
+        partition(arr, left, l-1)
+        partition(arr, l+1, right)
+    
+    partition(arr, 0, len(arr)-1)
     return arr
 
 
+def get_k_min(arr, k):
+    def partition(arr, l, r, k):
+        if l >= r:
+            return 0
+        left = l
+        right = r
+        pivot = arr[l]
+        while l < r:
+            while l < r and arr[r] >= pivot:
+                r -= 1
+            arr[l], arr[r] = arr[r], arr[l]
+            while l < r and arr[l] <= pivot:
+                l += 1
+            arr[l], arr[r] = arr[r], arr[l]
+        partition(arr, left, l-1, k)
+        if k > l+1:
+            partition(arr, l+1, right, k)
+
+
+    if k==0 or k>len(arr):
+        return []
+    partition(arr, 0, len(arr)-1, k)
+    return arr[:k]
+
+
+def get_kth_max(arr, k):
+    def partition(arr, l, r):
+        if l >= r:
+            return l
+        pivot = arr[l]
+        while l < r:
+            while l < r and arr[r] <= pivot:
+                r -= 1
+            arr[l], arr[r] = arr[r], arr[l]
+            while l < r and arr[l] >= pivot:
+                l += 1
+            arr[l], arr[r] = arr[r], arr[l]
+        return l
+
+   
+    left, right = 0, len(arr)-1
+    if k<=0 or k>len(arr):
+        return -100
+    while(left <= right):
+        pivot = partition(arr, left, right)
+        if pivot == k-1:
+            return arr[pivot]
+        elif pivot < k-1:
+            left = pivot + 1
+        else:
+            right = pivot - 1
+    return -100
+
 
 if __name__ == '__main__':
-    a = [52, 32, 91, 123, 1, 31, 43, 32, 55, 82, 9292, -49, 0, 15]
-    a = quickSort(a, 0, len(a)-1)
-    print(a)
-    print(validate(a))
+    # [-49, 0, 1, 1, 15, 31, 32, 32, 43, 52, 55, 82, 91, 123, 9292]
+    a = [52, 32, 91, 123, 1, 31, 43, 32, 55, 82, 1, 9292, -49, 0, 15]
+    # print(heapSort(a))
+    print(get_kth_max(a,2))
+    # print(validate(a))
 
