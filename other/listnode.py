@@ -5,6 +5,7 @@ class ListNode:
 
 
 def k_reverse(head, k):
+    # k个一组反转链表
     node = head
 
     for i in range(k):
@@ -48,6 +49,31 @@ def hasCycle_2(head: ListNode) -> bool:
         if slow == fast:
             return True
     return False
+
+def reverseBetween(head: ListNode, m: int, n: int) -> ListNode:
+    # 将一个节点数为 size 链表 m 位置到 n 位置之间的区间反转
+    
+    # l,m 分别是区间的前一个和后一个，即要反转l+1~r-1区间
+    l = r = None
+    node = head
+    for i in range(n):
+        if i==m-2:
+            l = node
+        node = node.next
+    r = node
+    
+    node = l.next if l else head    # 如果m为1则l为None
+    prev = r
+    while(node!=r):
+        temp = node.next
+        node.next = prev
+        prev = node 
+        node = temp
+    if l:   # m>1
+        l.next = prev
+        return head
+    else:   # m==1
+        return prev
 
 
 def printnode(head):
