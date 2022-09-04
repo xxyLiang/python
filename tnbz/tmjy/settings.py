@@ -34,7 +34,7 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 0.4
 DOWNLOAD_TIMEOUT = 5
 RETRY_TIMES = 3
 # The download delay setting will honor only one of:
@@ -64,7 +64,7 @@ COOKIES_ENABLED = False
 DOWNLOADER_MIDDLEWARES = {
    # 'tmjy.middlewares.TmjyDownloaderMiddleware': 543,
    #  'tmjy.middlewares.ProxyMiddleware': 544,
-    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 530,
+   #  'scrapy.downloadermiddlewares.retry.RetryMiddleware': 530,
 }
 
 # Enable or disable extensions

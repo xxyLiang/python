@@ -16,7 +16,8 @@ class TmjyPipeline:
     def __init__(self):
         self.db = pymysql.connect(host="localhost", user="root", password="651133439a", database="tmjy", charset='utf8mb4')
         self.cursor = self.db.cursor()
-        self.sql = 'insert into posts values(' + ('%s,'*12)[:-1] + ')'
+        # self.sql = 'insert into posts values(' + ('%s,'*12)[:-1] + ')'
+        self.sql = 'insert into posts_df values(' + ('%s,'*4)[:-1] + ')'
 
     def process_item(self, item, spider):
         # content需要去除的：\r \n \xa0
@@ -24,11 +25,15 @@ class TmjyPipeline:
         if item['author_level'] == "Master":
             item['author_level'] = '11'
         try:
+            # self.cursor.execute(
+            #     self.sql,
+            #     (item['pid'], item['tid'], item['rank'], item['is_initiate_post'], item['is_thread_publisher'],
+            #      item['content'], item['img_num'], item['author_id'], item['author_nickname'], item['author_level'],
+            #      item['reply_to_pid'], item['publish_time'])
+            # )
             self.cursor.execute(
                 self.sql,
-                (item['pid'], item['tid'], item['rank'], item['is_initiate_post'], item['is_thread_publisher'],
-                 item['content'], item['img_num'], item['author_id'], item['author_nickname'], item['author_level'],
-                 item['reply_to_pid'], item['publish_time'])
+                (item['pid'], item['tid'], item['author_id'], item['publish_time'])
             )
             self.db.commit()
         except Exception as e:

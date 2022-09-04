@@ -15,16 +15,17 @@ class PostsSpider(scrapy.Spider):
     db = pymysql.connect(host="localhost", user="root", password="651133439a", database="tmjy", charset='utf8mb4')
     cursor = db.cursor()
     # 运行前注意是否是正式表
-    sql_get_threads_list = "select tid, forum, page, url from `threads` where will_crawl=1 and crawled=0"
-    sql_update_crawled = "update `threads` set crawled=1, crawled_timestamp=%s where tid=%s"
+    # sql_get_threads_list = "select tid, forum, page, url from `threads` where will_crawl=1 and crawled=0"
+    sql_get_threads_list = "select tid, forum, page, url from `threads` where crawled=0"
+    sql_update_crawled = "update `threads` set crawled=1, crawled_timestamp=CURRENT_TIMESTAMP where tid=%s"
 
     referer_base = 'https://bbs.tnbz.com/forum.php?mod=forumdisplay&fid=%d&orderby=dateline&orderby=dateline&filter=author&page=%d'
     fid = [0, 4, 2, 57, 9, 58]
     count = 0
 
-    ips = requests.get('http://webapi.http.zhimacangku.com/getip?num=10&type=1&pro=0&city=0&yys=100026&port=11&pack=179910&ts=0&ys=0&cs=0&lb=1&sb=0&pb=45&mr=2&regions=')
-    for ip in ips.text.strip('\r\n').split('\r\n'):
-        ipPool.append('http://' + ip)
+    # ips = requests.get('http://webapi.http.zhimacangku.com/getip?num=10&type=1&pro=0&city=0&yys=100026&port=11&pack=179910&ts=0&ys=0&cs=0&lb=1&sb=0&pb=45&mr=2&regions=')
+    # for ip in ips.text.strip('\r\n').split('\r\n'):
+    #     ipPool.append('http://' + ip)
 
     def parse(self, response):
         self.cursor.execute(self.sql_get_threads_list)
@@ -98,9 +99,10 @@ class PostsSpider(scrapy.Spider):
                 try:
                     self.cursor.execute(
                         self.sql_update_crawled,
-                        (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), tid)
+                        tid
                     )
                     self.db.commit()
+                    print("threads %s finished" % tid)
                     self.count += 1
                     if self.count % 50 == 0:
                         print("%d threads' posts got." % self.count)
