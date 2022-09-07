@@ -1,3 +1,5 @@
+from typing import List
+
 def validate(arr):
     for i in range(len(arr)-1):
         if arr[i] > arr[i+1]:
@@ -7,9 +9,19 @@ def validate(arr):
 
 def bubbleSort(arr):
     for i in range(len(arr)):
-        for j in range(i+1, len(arr)):
-            if arr[i] > arr[j]:
-                arr[i], arr[j] = arr[j], arr[i]
+        for j in range(len(arr)-1, i, -1):
+            if arr[j] < arr[j-1]:
+                arr[j-1], arr[j] = arr[j], arr[j-1]
+    return arr
+
+
+def selectSort(arr):
+    for i in range(len(arr)):
+        minIndex = i
+        for j in range(i, len(arr)):
+            if arr[j] < arr[minIndex]:
+                minIndex = j
+        arr[i], arr[minIndex] = arr[minIndex], arr[i]
     return arr
 
 
@@ -78,6 +90,23 @@ def quickSort(arr):
     
     partition(arr, 0, len(arr)-1)
     return arr
+
+
+def quickSort2(arr: List[int]) -> List[int]:
+    if not arr:
+        return []
+    pivot = arr[int(len(arr)/2)]
+    left = []
+    right = []
+    middle = []
+    for i in arr:
+        if i<pivot:
+            left.append(i)
+        elif i>pivot:
+            right.append(i)
+        else:
+            middle.append(i)
+    return quickSort2(left) + middle + quickSort2(right)
 
 
 def get_k_min(arr, k):
@@ -163,6 +192,6 @@ if __name__ == '__main__':
     # [-49, 0, 1, 1, 15, 31, 32, 32, 43, 52, 55, 82, 91, 123, 9292]
     a = [52, 32, 91, 123, 1, 31, 43, 32, 55, 82, 1, 9292, -49, 0, 15]
     # print(heapSort(a))
-    print(get_kth_max(a,2))
+    print(bubbleSort(a))
     # print(validate(a))
 

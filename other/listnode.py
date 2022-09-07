@@ -76,6 +76,36 @@ def reverseBetween(head: ListNode, m: int, n: int) -> ListNode:
         return prev
 
 
+def sortInList(self , head: ListNode) -> ListNode:
+    '''
+        单链表排序，使用了归并思想
+    '''
+    if head is None or head.next is None:
+        return head
+    slow = head
+    fast = head.next
+    while(slow and fast and fast.next):
+        slow = slow.next
+        fast = fast.next.next
+    rightHead = slow.next
+    slow.next = None
+    left = self.sortInList(head)
+    right = self.sortInList(rightHead)
+        
+    zeroHead = ListNode(-1)
+    curr = zeroHead
+    while(left and right):
+        if left.val<right.val:
+            curr.next = left
+            left = left.next
+        else:
+            curr.next = right
+            right = right.next
+        curr = curr.next
+    curr.next = left if left else right
+    return zeroHead.next
+
+
 def printnode(head):
     res = []
     while(head):
