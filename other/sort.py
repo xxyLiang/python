@@ -25,6 +25,16 @@ def selectSort(arr):
     return arr
 
 
+def insertSort(arr):
+    for i in range(1, len(arr)):    # arr[:i]已排好升序
+        for j in range(i, 0, -1):       # 要将当前结点arr[i]插入到前面已排序的a[:i]中
+            if arr[j] < arr[j-1]:
+                arr[j], arr[j-1] = arr[j-1], arr[j]
+            else:                   # 如果碰到比当前结点更小的，说明前面的都是比它小的
+                break               # 那么当前结点就到了正确位置，该循环结束
+    return arr
+
+
 def mergeSort(arr):
     if len(arr) == 1:
         return arr
@@ -192,6 +202,6 @@ if __name__ == '__main__':
     # [-49, 0, 1, 1, 15, 31, 32, 32, 43, 52, 55, 82, 91, 123, 9292]
     a = [52, 32, 91, 123, 1, 31, 43, 32, 55, 82, 1, 9292, -49, 0, 15]
     # print(heapSort(a))
-    print(bubbleSort(a))
+    print(insertSort(a))
     # print(validate(a))
 

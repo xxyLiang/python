@@ -105,6 +105,22 @@ def sortInList(self , head: ListNode) -> ListNode:
     curr.next = left if left else right
     return zeroHead.next
 
+def removeNthFromEnd(head: ListNode, n: int) -> ListNode:
+    slow = fast = head
+    for i in range(n):
+        if fast:
+            fast = fast.next
+        else:
+            return head
+    if not fast:        # 在走完n次后，fast恰好等于None，说明头结点是倒数第n个
+        return head.next
+
+    while fast.next:
+        slow = slow.next
+        fast = fast.next
+    slow.next = slow.next.next   
+    return head
+
 
 def printnode(head):
     res = []
