@@ -6,7 +6,6 @@ from gensim import corpora
 import gensim
 import pickle
 import os
-import numpy as np
 
 N_TOPICS = 20
 
@@ -23,15 +22,15 @@ class LDA:
             [re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'), 'url']
         ]
         self._word = re.compile(r'[\u4e00-\u9fa5\dA-Za-z]+')
-        if os.path.exists('./model/LDA_model.dat') and os.path.exists('./model/dictionary.dat'):
-            self.dictionary = pickle.load(open('./model/dictionary.dat', 'rb'))
-            self.model = gensim.models.ldamodel.LdaModel.load("./model/LDA_model.dat")
+        if os.path.exists('model/LDA_model.dat') and os.path.exists('model/dictionary.dat'):
+            self.dictionary = pickle.load(open('model/dictionary.dat', 'rb'))
+            self.model = gensim.models.ldamodel.LdaModel.load("./model/OHCRec/LDA_model.dat")
         else:
             self.dictionary, self.model = self.generate_model()
 
     @staticmethod
     def load_stop_word():
-        with open('material/stopwords.txt', 'r', encoding='utf-8') as f:
+        with open('../material/stopwords.txt', 'r', encoding='utf-8') as f:
             lines = f.readlines()
             stop_words = set()
             for i in lines:
@@ -54,13 +53,13 @@ class LDA:
         data["content_cut"] = data.content.apply(self.__seg)
 
         dictionary = corpora.Dictionary(data.content_cut)
-        pickle.dump(dictionary, open('./model/dictionary.dat', 'wb'))
-        print("Dictionary is constructed and saved at './model/dictionary.dat'")
+        pickle.dump(dictionary, open('model/dictionary.dat', 'wb'))
+        print("Dictionary is constructed and saved at './model/OHCRec/dictionary.dat'")
         corpus = [dictionary.doc2bow(doc) for doc in data.content_cut]
 
         print("Start to learn LDA Model.")
         model = gensim.models.ldamodel.LdaModel(corpus, id2word=dictionary, num_topics=N_TOPICS)
-        model.save('./model/LDA_model.dat')
+        model.save('./model/OHCRec/LDA_model.dat')
         print("Training Model is completed. The model is saved at './model/LDA_model.dat'")
         return dictionary, model
 

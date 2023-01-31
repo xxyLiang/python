@@ -2,11 +2,14 @@ import pymysql
 import numpy as np
 import pandas as pd
 import time
-from lda import *
+from OHCRec.lda import LDA, N_TOPICS
+import os
+import math
 
 MAX = float('inf')
-THREAD_CNT_LOW = 20
+THREAD_CNT_LOW = 10
 THREAD_CNT_HIGH = 100
+DEBUG = False
 
 
 def timeit(func):
@@ -30,6 +33,9 @@ class OHCRec:
         self.c = c
         self.simRank_k = simRank_k
         self.data = None
+        self.data_train = None
+        self.y_test = None
+        self.rec_thread_time_limit = None
         self.user_cnt = 0
         self.user_list = None
         self.user_lda_feature = None
@@ -48,10 +54,11 @@ class OHCRec:
                             "where publish_time BETWEEN '2018-01-01' AND '2018-12-31' "
                             "AND EXISTS (select 1 from t1 where p.author_id=t1.uid)), "
                             "t3 as (SELECT tid from threads where forum=1) "
-                            "SELECT tid, `rank`, content, author_id from posts p2 "
-                            "where EXISTS (select 1 from t2, t3 where p2.tid = t2.tid and p2.tid=t3.tid)" %
+                            "SELECT tid, `rank`, content, author_id, publish_time from posts p2 "
+                            "where EXISTS (select 1 from t2, t3 where p2.tid = t2.tid and p2.tid=t3.tid) "
+                            "AND publish_time BETWEEN '2018-01-01' AND '2018-12-31' order by 5 asc" %
                             (THREAD_CNT_LOW, THREAD_CNT_HIGH))
-        self.data = pd.DataFrame(self.cursor.fetchall(), columns=['tid', 'rank', 'content', 'uid'])
+        self.data = pd.DataFrame(self.cursor.fetchall(), columns=['tid', 'rank', 'content', 'uid', 'publish_time'])
         self.threads = self.data.tid.drop_duplicates()
 
         user_attr = ['uid', 'thread_cnt', 'post_cnt', 'level', 'user_group', 'total_online_hours',
@@ -68,9 +75,8 @@ class OHCRec:
 
     # Implicit user behavior networks. 用户-用户n*n矩阵
     @timeit
-    def IUBN(self, data: pd.DataFrame = None):
-        if data is None:
-            data = self.data
+    def IUBN(self):
+        data = self.data_train if self.data_train is not None else self.data
 
         self.Bn = self.init_user_matrix()
 
@@ -79,9 +85,9 @@ class OHCRec:
         # equation 1
         users_set = set(self.user_list.index)
         for _, df in threads_users.groupby('tid'):
-            NU_p = df.shape[0]
             user_in_tid = set(df['uid'])
             intersect = user_in_tid & users_set
+            NU_p = len(intersect)
             for i in intersect:
                 for j in intersect:
                     self.Bn.at[i, j] += 1 / NU_p
@@ -107,7 +113,6 @@ class OHCRec:
         cs = self.cal_CS()
         us = 0.374 * sr + 0.229 * ps + 0.397 * cs
         self.S = ws.mul(us)
-        pass
 
     def URM(self):
         """
@@ -136,6 +141,9 @@ class OHCRec:
         # Equation 20
         self.R = R2.mul(H)
 
+        if self.rec_thread_time_limit is not None:
+            self.R = self.R.mul(self.rec_thread_time_limit)
+
     @timeit
     def cal_WS(self):
         """
@@ -143,6 +151,13 @@ class OHCRec:
         WS_ij is social influence of user i on user j
         :return: WS matrix
         """
+        path = './model/OHCRec/ws_%d_%d.pickle' % (THREAD_CNT_LOW, THREAD_CNT_HIGH)
+        if not DEBUG and os.path.exists(path):
+            ws = pd.read_pickle(path)
+            if set(ws.index) == set(self.user_list.index):
+                print("Using the Pre-train ws model")
+                return ws
+
         ws = self.init_user_matrix()
 
         for i in range(self.user_cnt):
@@ -151,6 +166,8 @@ class OHCRec:
 
         # Equation 8
         ws = ws.div(ws.sum())
+
+        ws.to_pickle(path)
         return ws
 
     @timeit
@@ -159,6 +176,13 @@ class OHCRec:
         SimRank for structural similarity between any two nodes in a network
         :return: None
         """
+        path = './model/OHCRec/sr_%d_%d.pickle' % (THREAD_CNT_LOW, THREAD_CNT_HIGH)
+        if not DEBUG and os.path.exists(path):
+            sr = pd.read_pickle(path)
+            if set(sr.index) == set(self.user_list.index):
+                print("Using the Pre-train sr model")
+                return sr
+
         # Initiate SR as shown in Equation 9
         sr = self.init_user_matrix(diagonal=1)
 
@@ -171,15 +195,18 @@ class OHCRec:
 
             for i in range(self.user_cnt):
                 i_neighbors = neighbor.iloc[i]
-                i_neighbors_cnt = i_neighbors.value_counts()[True]
-                if i_neighbors_cnt == 0:
+                try:
+                    i_neighbors_cnt = i_neighbors.value_counts()[True]
+                except:
                     continue
                 sr_i = sr_old.loc[i_neighbors, :]
                 w_i = self.Bn.loc[i_neighbors, self.Bn.index[i]]
+
                 for j in range(i+1):
                     j_neighbors = neighbor.iloc[j]
-                    j_neighbors_cnt = j_neighbors.value_counts()[True]
-                    if j_neighbors_cnt == 0:
+                    try:
+                        j_neighbors_cnt = j_neighbors.value_counts()[True]
+                    except:
                         continue
                     sr_ij = sr_i.loc[:, j_neighbors]
                     w_j = self.Bn.loc[j_neighbors, self.Bn.index[j]]
@@ -191,6 +218,8 @@ class OHCRec:
                     sr.iat[j, i] = s
 
         sr = (sr - sr.min().min()) / (sr.max().max() - sr.min().min())
+
+        sr.to_pickle(path)
 
         return sr
 
@@ -257,7 +286,8 @@ class OHCRec:
 
     def cal_user_lda_feature(self):
         lda = LDA()
-        data = self.data[['uid', 'content']]
+        data = self.data_train if self.data_train is not None else self.data
+        data = data[['uid', 'content']]
 
         features = pd.DataFrame(
             data=np.zeros((self.user_cnt, N_TOPICS)),
@@ -308,9 +338,8 @@ class OHCRec:
                 matrix.iat[i, i] = diagonal
         return matrix
 
-    def user_post_matrix(self, data: pd.DataFrame = None):
-        if data is None:
-            data = self.data
+    def user_post_matrix(self):
+        data = self.data_train if self.data_train is not None else self.data
 
         threads_users = data[['tid', 'uid']].drop_duplicates()
 
@@ -406,13 +435,45 @@ class OHCRec:
             raise ValueError("weight == %f, previous:" % weight, previous)
         return weight
 
-    @staticmethod
-    def train_test_split(x):
-        pass
+    def train_test_split(self):
+        test_flag = pd.Series([False] * self.data.shape[0], dtype=bool)
+        user_group = self.data.groupby('uid')
+
+        thread_time = self.data[['tid', 'publish_time']].drop_duplicates(['tid'])
+        thread_time = thread_time.set_index('tid')
+        # 根据user最后一次post的时间，只推荐在此时间之前的帖子
+        rec_thread_time_limit = pd.DataFrame(
+            data=np.zeros((self.user_cnt, self.data.tid.nunique())),
+            dtype=int,
+            index=self.user_list.index,
+            columns=thread_time.index
+        )
+        y_test = rec_thread_time_limit.copy()
+
+        for uid, df in user_group:
+            if uid not in self.user_list.index:
+                continue
+            thread = df.drop_duplicates(['tid'], keep='first')
+            test_thread_cnt = math.ceil(thread.tid.nunique() / 10)
+            test_thread_id = thread.iloc[-test_thread_cnt:]['tid']
+            test_row = df.tid.isin(test_thread_id)
+            test_row_index = test_row[test_row].index.tolist()
+            test_flag.iloc[test_row_index] = True
+
+            latest_time = thread.iloc[-1].publish_time
+            rec_thread_time_limit.loc[uid] = thread_time.publish_time.le(latest_time).astype(int)
+
+            y_test.loc[uid, test_thread_id.tolist()] = 1
+
+        self.data_train = self.data.loc[~test_flag].reset_index()
+        self.y_test = y_test
+        self.rec_thread_time_limit = rec_thread_time_limit
 
     def run(self):
+        self.train_test_split()
         self.IUBN()
         self.UIRs()
+        self.URM()
 
 
 if __name__ == '__main__':
