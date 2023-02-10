@@ -2,7 +2,7 @@ import pymysql
 import numpy as np
 import pandas as pd
 import time
-from OHCRec.lda import LDA, N_TOPICS
+from lda import LDA, N_TOPICS
 import os
 import math
 
