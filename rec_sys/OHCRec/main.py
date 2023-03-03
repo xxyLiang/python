@@ -5,9 +5,11 @@ import time
 from lda import LDA, N_TOPICS
 import os
 import math
+from tqdm import tqdm
+import pickle
 
 MAX = float('inf')
-THREAD_CNT_LOW = 10
+THREAD_CNT_LOW = 20
 THREAD_CNT_HIGH = 100
 DEBUG = False
 
@@ -15,9 +17,10 @@ DEBUG = False
 def timeit(func):
 
     def wrapper(*args, **kwargs):
+        print("Starting %s function..." % func.__name__)
         t = time.time()
         ret = func(*args, **kwargs)
-        print("%s use %.1fs." % (func.__name__, time.time()-t))
+        print("Function %s spend %.1f seconds." % (func.__name__, time.time()-t))
         return ret
 
     return wrapper
@@ -30,6 +33,8 @@ class OHCRec:
                                   password='651133439a',
                                   database='rec_sys')
         self.cursor = self.db.cursor()
+        self.uid2id = None
+        self.tid2id = None
         self.c = c
         self.simRank_k = simRank_k
         self.data = None
@@ -37,6 +42,7 @@ class OHCRec:
         self.y_test = None
         self.rec_thread_time_limit = None
         self.user_cnt = 0
+        self.thread_cnt = 0
         self.user_list = None
         self.user_lda_feature = None
         self.threads = None
@@ -45,21 +51,56 @@ class OHCRec:
         self.S = None           # User influence relationships Matrix: n*n
         self.P = None           # User Post Matrix: n*m
         self.R = None           # User Rating Matrix: n*m
-        self.load_data_from_db()
+        self.load_all_posts()
 
-    def load_data_from_db(self):
+    def load_thread_rank1(self):
         self.cursor.execute("with "
                             "t1 as (SELECT uid FROM user_list WHERE thread_cnt BETWEEN %d AND %d),"
                             "t2 as (SELECT distinct tid from posts p "
                             "where publish_time BETWEEN '2018-01-01' AND '2018-12-31' "
-                            "AND EXISTS (select 1 from t1 where p.author_id=t1.uid)), "
-                            "t3 as (SELECT tid from threads where forum=1) "
+                            "AND EXISTS (select 1 from t1 where p.author_id=t1.uid)) "
+                            "SELECT p2.tid, threads.title, p2.content from posts p2 "
+                            "LEFT JOIN threads ON p2.tid = threads.tid "
+                            "WHERE EXISTS (select 1 from t2 where p2.tid=t2.tid) and `rank`=1" %
+                            (THREAD_CNT_LOW, THREAD_CNT_HIGH))
+        data = pd.DataFrame(self.cursor.fetchall(), columns=['tid', 'title', 'content'])
+        data['tid'] = data['tid'].apply(lambda x: self.tid2id[x])
+        return data
+
+    def load_all_posts(self, initiate=False):
+        self.cursor.execute("with "
+                            "t1 as (SELECT uid FROM user_list WHERE thread_cnt BETWEEN %d AND %d),"
+                            "t2 as (SELECT distinct tid from posts p "
+                            "where publish_time BETWEEN '2018-01-01' AND '2018-12-31' "
+                            "AND EXISTS (select 1 from t1 where p.author_id=t1.uid)) "
                             "SELECT tid, `rank`, content, author_id, publish_time from posts p2 "
-                            "where EXISTS (select 1 from t2, t3 where p2.tid = t2.tid and p2.tid=t3.tid) "
+                            "where EXISTS (select 1 from t1, t2 where p2.tid = t2.tid and p2.author_id=t1.uid) "
                             "AND publish_time BETWEEN '2018-01-01' AND '2018-12-31' order by 5 asc" %
                             (THREAD_CNT_LOW, THREAD_CNT_HIGH))
-        self.data = pd.DataFrame(self.cursor.fetchall(), columns=['tid', 'rank', 'content', 'uid', 'publish_time'])
+        data = pd.DataFrame(self.cursor.fetchall(), columns=['tid', 'rank', 'content', 'uid', 'publish_time'])
+
+        # transfer id from char to nrange
+        users = data['uid'].drop_duplicates()
+        users.reset_index(drop=True, inplace=True)
+        id2uid = users.to_dict()
+        self.uid2id = dict(zip(id2uid.values(), id2uid.keys()))
+        threads = data['tid'].drop_duplicates()
+        threads.reset_index(drop=True, inplace=True)
+        id2tid = threads.to_dict()
+        self.tid2id = dict(zip(id2tid.values(), id2tid.keys()))
+
+        data['tid'] = data['tid'].apply(lambda x: self.tid2id[x])
+        data['uid'] = data['uid'].apply(lambda x: self.uid2id[x])
+        data['test_flag'] = False
+        test_data_idx = list()
+        for uid, df in data.groupby('uid'):
+            engage_thread = df['tid'].drop_duplicates()
+            test_cnt = math.ceil(engage_thread.shape[0] / 10)
+            test_data_idx.extend(df[df['tid'].isin(engage_thread.iloc[-test_cnt:])].index.to_list())
+        data.loc[test_data_idx, 'test_flag'] = True
+        self.data = data
         self.threads = self.data.tid.drop_duplicates()
+        self.thread_cnt = self.threads.shape[0]
 
         user_attr = ['uid', 'thread_cnt', 'post_cnt', 'level', 'user_group', 'total_online_hours',
                      'regis_time', 'latest_login_time', 'latest_active_time', 'latest_pub_time',
@@ -70,8 +111,12 @@ class OHCRec:
                                             (THREAD_CNT_LOW, THREAD_CNT_HIGH))
         rs = self.cursor.fetchall()
         self.user_list = pd.DataFrame(rs, columns=user_attr)
+        self.user_list['uid'] = self.user_list['uid'].apply(lambda x: self.uid2id[x])
         self.user_list.set_index('uid', inplace=True)
+        self.user_list.sort_index(inplace=True)
         self.user_cnt = self.user_list.shape[0]
+        print("Total user number: %d\nTotal thread number: %d" % (self.user_cnt, self.thread_cnt))
+        return data
 
     # Implicit user behavior networks. 用户-用户n*n矩阵
     @timeit
@@ -83,27 +128,23 @@ class OHCRec:
         threads_users = data[['tid', 'uid']]
 
         # equation 1
-        users_set = set(self.user_list.index)
         for _, df in threads_users.groupby('tid'):
-            user_in_tid = set(df['uid'])
-            intersect = user_in_tid & users_set
-            NU_p = len(intersect)
-            for i in intersect:
-                for j in intersect:
-                    self.Bn.at[i, j] += 1 / NU_p
-        for i in range(len(self.Bn)):
-            self.Bn.iat[i, i] = 0
+            user_in_tid = df['uid'].drop_duplicates().to_list()
+            NU_p = len(user_in_tid)
+            for i in user_in_tid:
+                self.Bn[i, user_in_tid] += 1 / NU_p
+
+        self.Bn[np.diag_indices(self.Bn.shape[0])] = 0
 
         # equation 2
-        self.Bn.div(self.user_list['thread_cnt'], axis=0)
+        self.Bn = np.divide(self.Bn, np.array(self.user_list['thread_cnt']).reshape(-1, 1))
 
         # equation 3
-        self.Bn = self.Bn / self.Bn.max().max()
+        self.Bn /= np.max(self.Bn)
 
         # 转化为对角为0，不连接结点为inf的矩阵
-        self.Bn = self.Bn.applymap(lambda x: x if x > 0 else MAX)   # 0转为inf
-        for i in range(len(self.Bn)):
-            self.Bn.iat[i, i] = 0
+        self.Bn[np.where(self.Bn == 0)] = MAX     # 0转为inf
+        self.Bn[np.diag_indices(self.Bn.shape[0])] = 0
 
     # User influence relationships
     def UIRs(self):
@@ -112,7 +153,7 @@ class OHCRec:
         ps = self.cal_PS()
         cs = self.cal_CS()
         us = 0.374 * sr + 0.229 * ps + 0.397 * cs
-        self.S = ws.mul(us)
+        self.S = ws * us
 
     def URM(self):
         """
@@ -123,26 +164,26 @@ class OHCRec:
         self.cal_thread_lda_feature()
 
         # Equation 16
-        R1 = self.S.T.dot(self.P)
+        R1 = np.matmul(self.S.T, self.P)
 
         # Equation 17
         thread_feature_T = self.thread_lda_feature.T
-        M = self.user_lda_feature.dot(thread_feature_T)
-        user_feature_mod = self.user_lda_feature.apply(lambda x: np.sqrt(x.dot(x)), axis=1)
-        thread_feature_mod = self.thread_lda_feature.apply(lambda x: np.sqrt(x.dot(x)), axis=1)
-        M = M.div(user_feature_mod, axis=0).div(thread_feature_mod, axis=1)
+        M = np.matmul(self.user_lda_feature, thread_feature_T)
+        user_feature_mod = np.sqrt(np.sum(self.user_lda_feature * self.user_lda_feature, axis=1))
+        thread_feature_mod = np.sqrt(np.sum(self.thread_lda_feature * self.thread_lda_feature, axis=1))
+        M = M / user_feature_mod.reshape(-1, 1) / thread_feature_mod
 
         # Equation 18
-        R2 = R1.mul(M)
+        R2 = R1 * M
 
         # Equation 19
         H = 1 - self.P
 
         # Equation 20
-        self.R = R2.mul(H)
+        self.R = R2 * H
 
         if self.rec_thread_time_limit is not None:
-            self.R = self.R.mul(self.rec_thread_time_limit)
+            self.R = self.R * self.rec_thread_time_limit
 
     @timeit
     def cal_WS(self):
@@ -151,23 +192,26 @@ class OHCRec:
         WS_ij is social influence of user i on user j
         :return: WS matrix
         """
-        path = './model/OHCRec/ws_%d_%d.pickle' % (THREAD_CNT_LOW, THREAD_CNT_HIGH)
+        path = './model/ws_%d_%d.pickle' % (THREAD_CNT_LOW, THREAD_CNT_HIGH)
         if not DEBUG and os.path.exists(path):
-            ws = pd.read_pickle(path)
-            if set(ws.index) == set(self.user_list.index):
+            ws = pickle.load(open(path, 'rb'))
+            if len(ws) == self.user_list.shape[0]:
                 print("Using the Pre-train ws model")
                 return ws
 
         ws = self.init_user_matrix()
 
+        pbar = tqdm(total=self.user_cnt)
         for i in range(self.user_cnt):
             ws_i = self.dijkstra(self.Bn, i)
-            ws.iloc[i] = pd.Series(ws_i)
+            ws[i] = np.array(ws_i)
+            pbar.update(1)
+        pbar.close()
 
         # Equation 8
-        ws = ws.div(ws.sum())
+        ws = np.divide(ws, np.sum(ws, axis=0))
 
-        ws.to_pickle(path)
+        pickle.dump(ws, open(path, 'wb'))
         return ws
 
     @timeit
@@ -176,50 +220,53 @@ class OHCRec:
         SimRank for structural similarity between any two nodes in a network
         :return: None
         """
-        path = './model/OHCRec/sr_%d_%d.pickle' % (THREAD_CNT_LOW, THREAD_CNT_HIGH)
+        path = './model/sr_%d_%d.pickle' % (THREAD_CNT_LOW, THREAD_CNT_HIGH)
         if not DEBUG and os.path.exists(path):
-            sr = pd.read_pickle(path)
-            if set(sr.index) == set(self.user_list.index):
+            sr = pickle.load(open(path, 'rb'))
+            if len(sr) == self.user_list.shape[0]:
                 print("Using the Pre-train sr model")
                 return sr
 
         # Initiate SR as shown in Equation 9
         sr = self.init_user_matrix(diagonal=1)
 
-        neighbor = self.Bn.applymap(lambda x: True if 0 < x < MAX else False)
+        neighbor = (self.Bn > 0) & (self.Bn < MAX)
 
+        pbar = tqdm(total=self.user_cnt * self.simRank_k)
         # start SimRank iteration as Equation 11
         for k in range(self.simRank_k):
 
-            sr_old = sr.copy()
+            sr_old = np.copy(sr)
 
             for i in range(self.user_cnt):
-                i_neighbors = neighbor.iloc[i]
+                i_neighbors = neighbor[i]
                 try:
-                    i_neighbors_cnt = i_neighbors.value_counts()[True]
+                    i_neighbors_cnt = i_neighbors.astype(int).sum()
                 except:
                     continue
-                sr_i = sr_old.loc[i_neighbors, :]
-                w_i = self.Bn.loc[i_neighbors, self.Bn.index[i]]
+                sr_i = sr_old[i_neighbors, :]
+                w_i = self.Bn[i_neighbors, i]
 
                 for j in range(i+1):
-                    j_neighbors = neighbor.iloc[j]
+                    j_neighbors = neighbor[j]
                     try:
-                        j_neighbors_cnt = j_neighbors.value_counts()[True]
+                        j_neighbors_cnt = j_neighbors.astype(int).sum()
                     except:
                         continue
-                    sr_ij = sr_i.loc[:, j_neighbors]
-                    w_j = self.Bn.loc[j_neighbors, self.Bn.index[j]]
+                    sr_ij = sr_i[:, j_neighbors]
+                    w_j = self.Bn[j_neighbors, j]
 
-                    sim_ij = sr_ij.mul(w_i, axis=0).mul(w_j, axis=1).sum().sum()
+                    sim_ij = np.multiply(sr_ij, w_i.reshape(-1, 1))
+                    sim_ij = np.multiply(sim_ij, w_j).sum()
 
                     s = self.c * sim_ij / i_neighbors_cnt / j_neighbors_cnt
-                    sr.iat[i, j] = s
-                    sr.iat[j, i] = s
+                    sr[[i, j], [j, i]] = s
 
-        sr = (sr - sr.min().min()) / (sr.max().max() - sr.min().min())
+                pbar.update(1)
 
-        sr.to_pickle(path)
+        pbar.close()
+        sr = (sr - np.min(sr)) / (np.max(sr) - np.min(sr))
+        pickle.dump(sr, open(path, 'wb'))
 
         return sr
 
@@ -240,7 +287,7 @@ class OHCRec:
             diff = []
             attr_col = self.user_list[attr]
             for i in range(self.user_cnt):
-                temp = attr_col.diff(periods=i+1).abs()
+                temp = (attr_col-attr_col.iloc[i]).abs()
                 if attr not in ['level', 'user_group']:     # if not ordinal attribute
                     temp = temp.apply(lambda x: np.log2(x+1))
                 temp.name = temp.index[i]
@@ -250,25 +297,22 @@ class OHCRec:
             max_diff = diff_matrix.max().max()
             diff_matrix = diff_matrix.applymap(lambda x: 1-(x-min_diff)/(max_diff-min_diff), na_action='ignore')
             diff_matrix.fillna(0, inplace=True)
-            total_sim = total_sim.add(diff_matrix)
-
-        total_sim = total_sim.add(total_sim.T)      # diff_matrix是上三角矩阵，这一句将total_sim转为对称矩阵
+            total_sim += np.array(diff_matrix)
 
         for attr in nominal_attrs:
             diff = []
             attr_col = self.user_list[attr]
             attr_col = attr_col.fillna('Null')
             for i in range(self.user_cnt):
-                temp = attr_col.eq(attr_col[i]).astype(int)     # Compare the whole column with the i_th element
+                temp = attr_col.eq(attr_col.iloc[i]).astype(int)     # Compare the whole column with the i_th element
                 temp.name = temp.index[i]
                 diff.append(temp)
             diff_matrix = pd.DataFrame(diff)
-            total_sim = total_sim.add(diff_matrix)
+            total_sim += np.array(diff_matrix)
 
         total_sim /= (len(numeric_attrs) + len(nominal_attrs))
 
-        for i in range(self.user_cnt):
-            total_sim.iat[i, i] = 1
+        total_sim[np.diag_indices(total_sim.shape[0])] = 1
 
         return total_sim
 
@@ -278,9 +322,9 @@ class OHCRec:
             self.cal_user_lda_feature()
 
         # Equation 15
-        cs = self.user_lda_feature.dot(self.user_lda_feature.T)
-        user_feature_mod = self.user_lda_feature.apply(lambda x: np.sqrt(x.dot(x)), axis=1)
-        cs = cs.div(user_feature_mod, axis=0).div(user_feature_mod, axis=1)
+        cs = np.matmul(self.user_lda_feature, self.user_lda_feature.T)
+        user_feature_mod = np.sqrt(np.sum(self.user_lda_feature * self.user_lda_feature, axis=1))
+        cs = cs / user_feature_mod / user_feature_mod.reshape(-1, 1)
 
         return cs
 
@@ -289,53 +333,41 @@ class OHCRec:
         data = self.data_train if self.data_train is not None else self.data
         data = data[['uid', 'content']]
 
-        features = pd.DataFrame(
-            data=np.zeros((self.user_cnt, N_TOPICS)),
-            dtype=float,
-            index=self.user_list.index
-        )
+        features = np.zeros((self.user_cnt, N_TOPICS))
 
         for uid, df in data.groupby('uid'):
             if uid not in self.user_list.index:
                 continue
 
-            text = " ".join(df.content.tolist())
-            feature = pd.Series(lda.lda_feature(text))
+            # text = " ".join(df.content.tolist())
+            # feature = np.array(lda.lda_feature(text))
 
-            # feature = df.content.apply(lda.lda_feature)
-            # feature = pd.DataFrame(feature.values.tolist(), index=df.content.index)
-            # feature = feature.mean()
+            feature = df.content.apply(lda.lda_feature)
+            feature = pd.DataFrame(feature.values.tolist(), index=df.content.index)
+            feature = feature.mean().to_numpy()
 
-            features.loc[uid] = feature
+            features[uid] = feature
 
         self.user_lda_feature = features
 
     def cal_thread_lda_feature(self):
         lda = LDA()
-        data = self.data[self.data['rank'] == 1][['tid', 'content']]
+        data = self.load_thread_rank1()
 
-        features = pd.DataFrame(
-            data=np.zeros((len(self.threads), N_TOPICS)),
-            dtype=float,
-            index=self.threads
-        )
+        features = np.zeros((len(self.threads), N_TOPICS))
 
         for _, row in data.iterrows():
-            f = pd.Series(lda.lda_feature(row.content))
-            features.loc[row.tid] = f
+            ft = np.array(lda.lda_feature(row.title + " " + row.content))
+            features[row.tid] = ft
+
+        features += 1e-3        # 修正features=0时出错
 
         self.thread_lda_feature = features
 
     def init_user_matrix(self, diagonal: int = 0):
-        matrix = pd.DataFrame(
-            data=np.zeros((self.user_cnt, self.user_cnt)),
-            dtype=float,
-            index=self.user_list.index,
-            columns=self.user_list.index
-        )
+        matrix = np.zeros((self.user_cnt, self.user_cnt))
         if diagonal:
-            for i in range(self.user_cnt):
-                matrix.iat[i, i] = diagonal
+            matrix[np.diag_indices(self.user_cnt)] = diagonal
         return matrix
 
     def user_post_matrix(self):
@@ -343,17 +375,12 @@ class OHCRec:
 
         threads_users = data[['tid', 'uid']].drop_duplicates()
 
-        p = pd.DataFrame(
-            data=np.zeros((len(self.user_list.index), len(self.threads))),
-            dtype=int,
-            index=self.user_list.index,
-            columns=self.threads.tolist()
-        )
+        p = np.zeros((len(self.user_list.index), len(self.threads)))
 
         user_set = self.user_list.index
         for uid, df in threads_users.groupby('uid'):
             if uid in user_set:
-                p.loc[uid, df.tid.tolist()] = 1
+                p[uid, df.tid.tolist()] = 1
 
         return p
 
@@ -373,7 +400,7 @@ class OHCRec:
         return result
 
     @staticmethod
-    def dijkstra(matrix: pd.DataFrame, start_node):
+    def dijkstra(matrix: np.ndarray, start_node):
         """
         根据Equation6，利用dijkstra算法计算从start_node开始，到其他结点路径权重，规则如下：
             1、选择步数最短路径\n
@@ -406,7 +433,7 @@ class OHCRec:
 
             used_node[min_value_index] = True
 
-            adjacent_node = matrix.iloc[min_value_index] < MAX
+            adjacent_node = matrix[min_value_index] < MAX
 
             for index in range(matrix_length):
                 if not adjacent_node[index] or used_node[index]:
@@ -414,9 +441,9 @@ class OHCRec:
                 new_path = shortest_path[min_value_index] + 1
                 if new_path < shortest_path[index]:
                     shortest_path[index] = new_path
-                    ws[index] = ws[min_value_index] * matrix.iat[min_value_index, index]
+                    ws[index] = ws[min_value_index] * matrix[min_value_index, index]
                 elif new_path == shortest_path[index]:
-                    new_path_weight = ws[min_value_index] * matrix.iat[min_value_index, index]
+                    new_path_weight = ws[min_value_index] * matrix[min_value_index, index]
                     if new_path_weight > ws[index]:
                         shortest_path[index] = new_path
                         ws[index] = new_path_weight
@@ -441,18 +468,12 @@ class OHCRec:
 
         thread_time = self.data[['tid', 'publish_time']].drop_duplicates(['tid'])
         thread_time = thread_time.set_index('tid')
+        thread_time.sort_index(inplace=True)
         # 根据user最后一次post的时间，只推荐在此时间之前的帖子
-        rec_thread_time_limit = pd.DataFrame(
-            data=np.zeros((self.user_cnt, self.data.tid.nunique())),
-            dtype=int,
-            index=self.user_list.index,
-            columns=thread_time.index
-        )
-        y_test = rec_thread_time_limit.copy()
+        rec_thread_time_limit = np.zeros((self.user_cnt, self.data.tid.nunique()), dtype=np.int32)
+        y_test = np.zeros((self.user_cnt, self.data.tid.nunique()), dtype=np.int32)
 
         for uid, df in user_group:
-            if uid not in self.user_list.index:
-                continue
             thread = df.drop_duplicates(['tid'], keep='first')
             test_thread_cnt = math.ceil(thread.tid.nunique() / 10)
             test_thread_id = thread.iloc[-test_thread_cnt:]['tid']
@@ -461,9 +482,9 @@ class OHCRec:
             test_flag.iloc[test_row_index] = True
 
             latest_time = thread.iloc[-1].publish_time
-            rec_thread_time_limit.loc[uid] = thread_time.publish_time.le(latest_time).astype(int)
+            rec_thread_time_limit[uid] = np.array(thread_time.publish_time.le(latest_time).astype(int))
 
-            y_test.loc[uid, test_thread_id.tolist()] = 1
+            y_test[uid, test_thread_id.tolist()] = 1
 
         self.data_train = self.data.loc[~test_flag].reset_index()
         self.y_test = y_test
@@ -479,3 +500,6 @@ class OHCRec:
 if __name__ == '__main__':
     rec = OHCRec()
     rec.run()
+    # engage = rec.user_engage_matrix()
+    with open('model.pickle', 'wb') as f:
+        pickle.dump((rec.R, rec.y_test), f)
