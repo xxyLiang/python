@@ -81,6 +81,7 @@ class MARecEval(BaseEval):
                             'hist_lda': batchData['hist_lda'][j],
                             'hist_vector': batchData['hist_vector'][j],
                             'hist_info': batchData['hist_info'][j],
+                            'hist_authority': batchData['hist_authority'][j],
                             'hist_participants': batchData['hist_participants'][j],
                             'hist_interact': batchData['hist_interact'][j],
                             'timeDelta': batchData['timeDelta'][j]
@@ -100,9 +101,10 @@ class MARecEval(BaseEval):
                 neg_item['user'] = torch.LongTensor([user] * len(neg_thread))
                 neg_item['item_lda'] = torch.FloatTensor(self.data.thread_lda[neg_thread])
                 neg_item['item_vector'] = torch.FloatTensor(self.data.thread_vector[neg_thread])
-                neg_item['item_info'] = torch.FloatTensor(self.data.thread_info[neg_thread])
+                neg_item['item_info'] = torch.FloatTensor(self.data.thread_stat[neg_thread])
+                neg_item['item_authority'] = torch.FloatTensor(self.data.user_info[self.data.thread_initiator[neg_thread]])
                 neg_item['item_participants'] = torch.FloatTensor(self.data.thread_participants_feature[neg_thread])
-                neg_item['item_interact'] = torch.FloatTensor(self.data.social_network[user, self.data.thread_user['initiator'][neg_thread]])
+                neg_item['item_interact'] = torch.FloatTensor(self.data.social_network[user, self.data.thread_initiator[neg_thread]])
 
                 neg_topic_gain = self.model.curr_topic_gain(neg_item)
                 dot_ = torch.mul(topic_gain_diff, neg_topic_gain).sum(1).view(-1)

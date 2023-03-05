@@ -1,11 +1,9 @@
 import time
-
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from auxiliary import KEmbedding, UniformEmbedding
-from lda import N_TOPICS
-from data_prepare import HISTORY_THREAD_TAKEN_CNT, VECTOR_DIM
+from settings import N_TOPICS, HISTORY_THREAD_TAKEN_CNT, VECTOR_DIM
 import data_loader
 import data_prepare
 from tqdm import tqdm
@@ -36,8 +34,6 @@ class PT(nn.Module):
         # 三类收益的权重
         self.know_weight_global = KEmbedding(1, 1, 1).to(self.device).to(torch.float64)
         self.know_weight_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
-        self.rep_weight_global = KEmbedding(1, 1, 0.5).to(self.device).to(torch.float64)
-        self.rep_weight_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
         self.com_weight_global = KEmbedding(1, 1, 1).to(self.device).to(torch.float64)
         self.com_weight_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
 
@@ -83,12 +79,17 @@ class PT(nn.Module):
         self.com_participant_pref_user = nn.Embedding(user_len, N_TOPICS).to(torch.float64).to(self.device)
         self.com_participant_pref_user.weight.data = torch.FloatTensor(lda_dist)
 
-        self.com_participant_weight_global = KEmbedding(1, 1, 0.5).to(self.device).to(torch.float64)
-        self.com_participant_weight_user = UniformEmbedding(user_len, 1, -0.1, 0.1).to(self.device).to(torch.float64)
         self.com_interact_apart_weight_global = KEmbedding(1, 2, 0.5).to(self.device).to(torch.float64)
         self.com_interact_apart_weight_user = UniformEmbedding(user_len, 2, -0.05, 0.05).to(self.device).to(torch.float64)
-        self.com_interact_weight_global = KEmbedding(1, 1, 0.5).to(self.device).to(torch.float64)
-        self.com_interact_weight_user = UniformEmbedding(user_len, 1, -0.1, 0.1).to(self.device).to(torch.float64)
+        self.com_auth_apart_weight_global = KEmbedding(1, 3, 0.33).to(self.device).to(torch.float64)
+        self.com_auth_apart_weight_user = UniformEmbedding(user_len, 3, -0.05, 0.05).to(self.device).to(torch.float64)
+
+        self.com_participant_weight_global = KEmbedding(1, 1, 0.33).to(self.device).to(torch.float64)
+        self.com_participant_weight_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
+        self.com_interact_weight_global = KEmbedding(1, 1, 0.33).to(self.device).to(torch.float64)
+        self.com_interact_weight_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
+        self.com_auth_weight_global = KEmbedding(1, 1, 0.33).to(self.device).to(torch.float64)
+        self.com_auth_weight_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
 
         self.com_x_ref_global = KEmbedding(1, 1, 0.3).to(self.device).to(torch.float64)
         self.com_x_ref_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
@@ -103,34 +104,10 @@ class PT(nn.Module):
         self.com_x_alpha_global.requires_grad_ = False
         self.com_x_beta_global.requires_grad_ = False
 
-        # 声望部分
-        # self.rep_SN_weight_global = KEmbedding(1, 4, 0)
-        # self.rep_SN_weight_global.weight.data = torch.FloatTensor([[0.2, 0.15, 0.1, 0.6]])
-        # self.rep_SN_weight_user = UniformEmbedding(user_len, 4, -0.05, 0.05)
-        #
-        # self.rep_x_lamda_global = KEmbedding(1, 1, 1.5).to(self.device).to(torch.float64)
-        # self.rep_x_lamda_global.requires_grad_ = False
-        # self.rep_x_lamda_user = UniformEmbedding(user_len, 1, -0.5, 0.5).to(self.device).to(torch.float64)
-        # self.rep_x_alpha_global = KEmbedding(1, 1, 0.6).to(self.device).to(torch.float64)
-        # self.rep_x_alpha_global.requires_grad_ = False
-        # self.rep_x_alpha_user = UniformEmbedding(user_len, 1, -0.1, 0.1).to(self.device).to(torch.float64)
-        # self.rep_x_beta_global = KEmbedding(1, 1, 0.55).to(self.device).to(torch.float64)
-        # self.rep_x_beta_global.requires_grad_ = False
-        # self.rep_x_beta_user = UniformEmbedding(user_len, 1, -0.1, 0.1).to(self.device).to(torch.float64)
-        #
-        # self.rep_x_ref_global = KEmbedding(1, 1, k=0.3).to(self.device).to(torch.float64)
-        # self.rep_x_ref_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
-
-        self.topic_fc_1 = nn.Linear(2 * (VECTOR_DIM + N_TOPICS), 200, dtype=torch.float64).to(self.device)
-        self.topic_fc_2 = nn.Linear(200, 1, dtype=torch.float64).to(self.device)
-
-        self.wide_weight = KEmbedding(1, 1, 0.5).to(self.device).to(torch.float64)
-
         self.to(self.device)
         self.grads = {}
 
     def forward(self, data):
-        # return self.__deep_forward(data)
 
         hist_topic_gain = self.hist_topic_gain(data)  # 历史收益部分
         gain_lda_diff = torch.sub(self.lda_gain_ref_user(data['user'].to(self.device)), hist_topic_gain)  # 历史收益与用户预期的差异
@@ -145,12 +122,13 @@ class PT(nn.Module):
         hist_lda = data['hist_lda'].to(self.device)  # (n, 10, 20)
         hist_vector = data['hist_vector'].to(self.device)  # (n, 10, 50)
         hist_info = data['hist_info'].to(self.device)  # (n, 10)
+        hist_auth = data['hist_authority'].to(self.device)
         hist_participants = data['hist_participants'].to(self.device)
         hist_interact = data['hist_interact'].to(self.device)
         timeDelta = data['timeDelta'].to(self.device)  # (n, 10)
 
         hist_knowledge_gain = self.knowledge_gain(user, hist_lda, hist_vector, hist_info)  # (n, 10)
-        hist_com_gain = self.com_gain(user, hist_participants, hist_interact)
+        hist_com_gain = self.com_gain(user, hist_participants, hist_interact, hist_auth)
 
         knowledge_weight = self.know_weight_global(self.zero_) + self.know_weight_user(user)
         com_weight = self.com_weight_global(self.zero_) + self.com_weight_user(user)
@@ -170,6 +148,7 @@ class PT(nn.Module):
         item_lda = data['item_lda'].to(self.device)  # (n, 20)
         item_vector = data['item_vector'].to(self.device)  # (n, 50)
         item_info = data['item_info'].to(self.device)  # (n, 3)
+        item_auth = data['item_authority'].to(self.device)
         item_participants = data['item_participants'].to(self.device)
         item_interact = data['item_interact'].to(self.device)
 
@@ -182,7 +161,8 @@ class PT(nn.Module):
         curr_item_com_gain = self.com_gain(
             user,
             item_participants.view(-1, 1, N_TOPICS),
-            item_interact.view(-1, 1, 2)
+            item_interact.view(-1, 1, 2),
+            item_auth.view(-1, 1, 3)
         )
 
         knowledge_weight = self.know_weight_global(self.zero_) + self.know_weight_user(user)
@@ -233,43 +213,25 @@ class PT(nn.Module):
 
         return value
 
-    def rep_gain(self, user, centrality):
-        # rep_sn_weight = self.rep_SN_weight_global(self.zero_) + self.rep_SN_weight_user(user)
-        # rep_x_ref = self.rep_x_ref_global(self.zero_) + self.rep_x_ref_user(user)
-        #
-        # sn = self.cossim_2(centrality, rep_sn_weight.view(-1, 1, 4))
-        # x = sn - rep_x_ref
-        # # x = torch.mul(sn, self.rep_SN_weight_user(user)) - rep_x_ref
-        #
-        # x_binary_pos = torch.gt(x, self.zero_).to(torch.float64)
-        # x_binary_neg = torch.ones_like(x).to(self.device) - x_binary_pos
-        #
-        # x = torch.abs(x)
-        #
-        # lamda = self.rep_x_lamda_global(self.zero_) + self.rep_x_lamda_user(user)
-        # alpha = self.rep_x_alpha_global(self.zero_) + self.rep_x_alpha_user(user)
-        # beta = self.rep_x_beta_global(self.zero_) + self.rep_x_beta_user(user)
-        #
-        # v_exp = torch.mul(alpha, x_binary_pos) + torch.mul(beta, x_binary_neg)
-        # v = x.pow(v_exp)
-        # v_coef = x_binary_pos - torch.mul(lamda, x_binary_neg)
-        # value = torch.mul(v, v_coef)
-        #
-        # return value
-        pass
-
-    def com_gain(self, user, participant, interact):
+    def com_gain(self, user, participant, interact, authority):
         user_participant_pref = self.com_participant_pref_user(user)
         participant_similarity = self.cossim_2(user_participant_pref.view((-1, 1, N_TOPICS)), participant)
-        #
+
         interact_apart_weight = self.com_interact_apart_weight_global(self.zero_) + self.com_interact_apart_weight_user(user)
         interact_gain = torch.mul(interact, interact_apart_weight.view(-1, 1, 2)).sum(2)
 
+        auth_apart_weight = self.com_auth_apart_weight_global(self.zero_) + self.com_auth_apart_weight_user(user)
+        auth_gain = torch.mul(authority, auth_apart_weight.view(-1, 1, 3)).sum(2)
+
+        auth_weight = self.com_auth_weight_global(self.zero_) + self.com_auth_weight_user(user)
         participant_weight = self.com_participant_weight_global(self.zero_) + self.com_participant_weight_user(user)
         interact_weight = self.com_interact_weight_global(self.zero_) + self.com_interact_weight_user(user)
         x_ref = self.com_x_ref_global(self.zero_) + self.com_x_ref_user(user)
-        x = torch.mul(participant_similarity, participant_weight) - x_ref \
-            + torch.mul(interact_gain, interact_weight)
+
+        x = torch.mul(participant_similarity, participant_weight) \
+            + torch.mul(interact_gain, interact_weight) \
+            + torch.mul(auth_gain, auth_weight) \
+            - x_ref
 
         x_binary_pos = torch.gt(x, self.zero_).to(torch.float64)
         x_binary_neg = torch.ones_like(x).to(self.device) - x_binary_pos
@@ -286,21 +248,6 @@ class PT(nn.Module):
         value = torch.mul(v, v_coef)
 
         return value
-
-    def __deep_forward(self, data):
-        hist_vector = data['hist_vector'].to(self.device)  # (n, 10, 50)
-        hist_lda = data['hist_lda'].to(self.device)
-        item_vector = data['item_vector'].to(self.device)  # (n, 50)
-        item_lda = data['item_lda'].to(self.device)
-
-        mean_hist_vector = torch.mean(hist_vector, dim=1)  # (n, 50)
-        mean_hist_lda = torch.mean(hist_lda, dim=1)
-
-        vector_ = torch.cat([mean_hist_vector, item_vector, mean_hist_lda, item_lda], dim=1)
-        fc_1_output = self.topic_fc_1(vector_)
-        fc_2_output = self.topic_fc_2(fc_1_output).view(-1)
-
-        return fc_2_output
 
     def loss(self, data):
         pos_out = self.forward(data).reshape(-1, 1)
@@ -320,12 +267,14 @@ class PT(nn.Module):
         neg_data['hist_lda'] = self.__duplicates(data['hist_lda'], times=negNum)
         neg_data['hist_vector'] = self.__duplicates(data['hist_vector'], times=negNum)
         neg_data['hist_info'] = self.__duplicates(data['hist_info'], times=negNum)
+        neg_data['hist_authority'] = self.__duplicates(data['hist_authority'], times=negNum)
         neg_data['hist_participants'] = self.__duplicates(data['hist_participants'], times=negNum)
         neg_data['hist_interact'] = self.__duplicates(data['hist_interact'], times=negNum)
         neg_data['timeDelta'] = self.__duplicates(data['timeDelta'], times=negNum)
         neg_data['item_lda'] = data['negItem_lda'].reshape((-1, N_TOPICS))
         neg_data['item_vector'] = data['negItem_vector'].reshape((-1, VECTOR_DIM))
         neg_data['item_info'] = data['negItem_info']
+        neg_data['item_authority'] = data['negItem_authority']
         neg_data['item_participants'] = data['negItem_participants']
         neg_data['item_interact'] = data['negItem_interact']
         return neg_data
@@ -374,7 +323,7 @@ class PT(nn.Module):
 if __name__ == '__main__':
     params = {
         'lr': 1e-2,
-        'w_decay': 1e-2,
+        'w_decay': 2e-2,
         'batch_size': 128,
         'negNum_train': 2,
         'negNum_test': 10,

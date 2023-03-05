@@ -5,8 +5,7 @@ import gensim
 import pickle
 import os
 from auxiliary import CutWord
-
-N_TOPICS = 20
+from settings import N_TOPICS, cursor
 
 
 class LDA:
@@ -20,11 +19,6 @@ class LDA:
             self.dictionary, self.model = self.generate_model()
 
     def generate_model(self):
-        db = pymysql.connect(host='localhost',
-                             user='root',
-                             password='651133439a',
-                             database='rec_sys')
-        cursor = db.cursor()
         cursor.execute(
             "SELECT content FROM `posts` where LENGTH(content) > 2 AND tid in "
             "(select tid from threads where forum=1 and publish_date BETWEEN '2018-01-01' AND '2018-12-31')"

@@ -1,34 +1,13 @@
-import time
-import pymysql
 import pandas as pd
 import numpy as np
 import pickle
 import math
-import os
 from bert_serving.client import BertClient
 from sklearn.decomposition import PCA
 from tqdm import tqdm
-from lda import LDA, N_TOPICS
+from lda import LDA
 import networkx as nx
-
-
-HISTORY_THREAD_TAKEN_CNT = 10
-VECTOR_DIM = 50
-THREAD_CNT_LOW = 5
-THREAD_CNT_HIGH = 10000
-
-db = pymysql.connect(host='localhost',
-                     user='root',
-                     password='651133439a',
-                     database='rec_sys')
-cursor = db.cursor()
-
-
-if os.name == 'nt':
-    prefix = 'C:/Users/65113/Desktop/Recsys_data/'
-elif os.name == 'posix':
-    prefix = '/Users/liangxiyi/Files/Recsys_data/'
-filetype = '.pickle'
+from settings import *
 
 
 def read_data(filename):
@@ -111,6 +90,17 @@ class FileMaker:
         cls.train_test_split(data)
         return data
 
+    @classmethod
+    def load_user_info(cls, user_map=None):
+        cursor.execute("SELECT uid, level, user_group, points FROM user_list WHERE thread_cnt BETWEEN %d AND %d" %
+                       (THREAD_CNT_LOW, THREAD_CNT_HIGH))
+        data = pd.DataFrame(cursor.fetchall(), columns=['uid', 'level', 'user_group', 'points'])
+        if user_map is not None:
+            data['uid'] = data['uid'].apply(lambda x: user_map[x])
+        data = data.set_index(keys='uid', drop=True).sort_index().fillna(0)
+        data['points'] = data['points'].apply(lambda x: x if x > 0 else 0)
+        return data
+
     @staticmethod
     def train_test_split(data):
         data['test_flag'] = False
@@ -122,8 +112,9 @@ class FileMaker:
         data.loc[test_data_idx, 'test_flag'] = True
         return
 
-    def make_id_transfer(self):
-        data = self.load_all_posts()
+    def make_id_transfer(self, data=None):
+        if data is None:
+            data = self.load_all_posts()
         users = data['uid'].drop_duplicates()
         users.reset_index(drop=True, inplace=True)
         id2uid = users.to_dict()
@@ -137,20 +128,12 @@ class FileMaker:
 
         return uid2id, tid2id
 
-    def make_user_sequence(self):
+    def make_user_sequence(self, data=None):
         """
-        pattern of User_seq：
-        {
-          user1: {
-                'thread': [tid_1, tid_2, ..., tid_n],
-                'time': [tid_1_time, tid_2_time, ..., tid_n_time],
-                'test_flag': [test_flag1, ...],
-                'test_list': []
-          },
-          user2: ...
-        }
+        以用户为单位，生成每个用户的参与帖子序列，包括：帖子id、参与时间、是否为测试集；以及用户没有参与，且在最后活跃时间已经有的其他帖子。
         """
-        data = self.load_all_posts(user_map=self.uid2id, thread_map=self.tid2id)
+        if data is None:
+            data = self.load_all_posts(user_map=self.uid2id, thread_map=self.tid2id)
 
         user_seq = dict()
 
@@ -183,60 +166,10 @@ class FileMaker:
 
         return user_seq
 
-    @staticmethod
-    def analyse_thread_user(data, save=False):
+    def make_social_network_file(self):
         """
-        分析帖子数据，汇总每个主题帖的如下信息：
-        1. 发帖者
-        2. 主题帖中出现的所有用户（训练集）
-        :param data: 所有帖子数据，包括测试集
-        :param save: 是否保存thread_info
-        :return: dict{'initiator': [1*m], 'participants':[1*m]}
-        """
-        # 初始化
-        thread_cnt = data['tid'].nunique()
-        thread_user = {
-            'initiator': np.zeros(thread_cnt+1, dtype=np.int32),
-            'participants': {}
-        }
-        for i in data['tid'].drop_duplicates().to_list():
-            thread_user[i] = {}
-        thread_user['initiator'][-1] = -1       # 空白
-
-        # 发帖者
-        first_post = data[data['rank'] == 1]
-        thread_user['initiator'][first_post['tid'].to_numpy()] = first_post['uid'].to_numpy()
-
-        # 所有用户
-        data_train = data[~data['test_flag']][['tid', 'uid']].drop_duplicates()
-        for tid, df in data_train.groupby('tid'):
-            thread_user['participants'][tid] = df['uid'].to_list()
-
-        if save:
-            save_data(thread_user, 'thread_user')
-        return thread_user
-
-    def thread_participants_feature(self):
-        """
-        根据帖子参与用户的lda偏好，以lda形式计算帖子的参与者特征
-        :return: m*20的numpy矩阵
-        """
-        data = self.load_all_posts(user_map=self.uid2id, thread_map=self.tid2id)
-        thread_user = self.analyse_thread_user(data, save=True)
-        user_lda_dist = read_data('user_dist')['lda_dist']
-        feature = np.zeros((self.thread_cnt + 1, N_TOPICS)).astype(np.float32)
-
-        for tid, participants in thread_user['participants'].items():
-            feature[tid] = user_lda_dist[participants].mean(axis=0)
-
-        save_data(feature, 'thread_participants_feature')
-
-        return feature
-
-    def get_social_network(self):
-        """
-        根据回帖关系，生成社会网络
-        :return: 字典，包括社会网络图、用户间的邻接矩阵、最短路径、交互指数
+        根据回帖关系，生成用户间的邻接矩阵、最短路径、交互指数的【字典】
+        :return:
         """
         data = self.load_posts_and_reply()
         data = data[~data['test_flag']]
@@ -260,11 +193,11 @@ class FileMaker:
         adjacency_matrix = 1 / (1 + np.exp(-adjacency_matrix)) * 2 - 1      # 通过sigmoid转化至（0，1）
 
         # 计算两两用户间的最短路径长度，并取倒数
-        print("Calculating shortest path...")
-        shortest_path_length = np.zeros((self.user_cnt+1, self.user_cnt+1))
-        for k, v in nx.shortest_path_length(graph, weight=1):
-            shortest_path_length[k, list(v.keys())] = list(v.values())
-        shortest_path_length = np.reciprocal(shortest_path_length.astype(np.float32), where=shortest_path_length != 0)
+        # print("Calculating shortest path...")
+        # shortest_path_length = np.zeros((self.user_cnt+1, self.user_cnt+1))
+        # for k, v in nx.shortest_path_length(graph, weight=1):
+        #     shortest_path_length[k, list(v.keys())] = list(v.values())
+        # shortest_path_length = np.reciprocal(shortest_path_length.astype(np.float32), where=shortest_path_length != 0)
 
         # 计算两两用户间的交互指数
         print('Calculating interact index...')
@@ -287,14 +220,26 @@ class FileMaker:
 
         social_network = {
             'adjacency_matrix': adjacency_matrix,
-            'shortest_path': shortest_path_length,
+            # 'shortest_path': shortest_path_length,
             'interact': interact_index
         }
         save_data(social_network, 'social_network')
         return social_network
 
     def make_user_info_file(self):
-        pass
+        data = self.load_user_info(user_map=self.uid2id)
+        data['level'] /= 10
+        data['user_group'] /= 10
+        data['points'] = data['points'].apply(lambda x: 1 / (1 + np.exp(-math.log(x+1, 100))) * 2 - 1)
+
+        if data.shape[0] == self.user_cnt:
+            feature = data.to_numpy()
+        else:
+            feature = np.zeros((self.user_cnt, data.shape[1]), dtype=np.float32)
+            feature[data.index] = data.to_numpy()
+
+        save_data(feature, 'user_info')
+        return feature
 
     def make_thread_LDA_file(self):
         lda = LDA()
@@ -348,14 +293,32 @@ class FileMaker:
 
         return pca_feature
 
-    def get_thread_info(self):
+    def make_thread_info_file(self, data=None):
         """
-        thread_info中存储帖子相关的统计性数据，这些数据与具体用户无关，包括：
-            1. 文本长度
-            2. 图片数量
-            3. 信息增益
-        :return: 一个m*3的np.array，其中m为帖子数量，三列分别为 'text_len', 'img_num', 'info_quantity'
+        thread_info【字典】中存储帖子相关的统计性数据，包括：
+            1. statistics: np.array (m, 3)，文本长度、图片数量、信息增益
+            2. initiator: list (m, ) ，发帖者
+            3. participants: dict[int, list]，主题帖中出现的所有用户（训练集）
+            4. participant_feature: np.array (m, 20)，根据帖子参与用户的lda偏好，以lda形式计算帖子的参与者特征
+        :return:
         """
+        thread_info = dict()
+
+        if data is None:
+            data = self.load_all_posts(user_map=self.uid2id, thread_map=self.tid2id)
+        user_lda_dist = read_data('user_dist')['lda_dist']
+        thread_user = self._thread_user(data)
+        participant_feature = self._thread_participants_feature(thread_user['participants'], user_lda_dist)
+
+        thread_info['statistics'] = self._thread_statistic()
+        thread_info['initiator'] = thread_user['initiator']
+        thread_info['participants'] = thread_user['participants']
+        thread_info['participant_feature'] = participant_feature
+
+        save_data(thread_info, 'thread_info')
+        return thread_info
+
+    def _thread_statistic(self):
         # 描述统计：text_len: (0.52 +- 0.29), img_num:(0.26 +- 0.31), info_quan: (0.47 += 0.20)
         from auxiliary import CutWord
         cut_tool = CutWord()
@@ -363,10 +326,10 @@ class FileMaker:
         data['text'] = data['title'] + " " + data['content']
 
         # 首先统计text_len和img_num
-        text_len_array = np.zeros(self.thread_cnt+1)
-        img_num_array = np.zeros(self.thread_cnt+1)
-        text_len_array[data['tid']] = data['text'].apply(lambda x: len(x)/50)
-        img_num_array[data['tid']] = data['img_num'].apply(lambda x: np.log2(x+1))
+        text_len_array = np.zeros(self.thread_cnt + 1)
+        img_num_array = np.zeros(self.thread_cnt + 1)
+        text_len_array[data['tid']] = data['text'].apply(lambda x: len(x) / 50)
+        img_num_array[data['tid']] = data['img_num'].apply(lambda x: np.log2(x + 1))
 
         # 计算信息增益
         topic_word_freq = []
@@ -391,7 +354,7 @@ class FileMaker:
                     d['max_freq'] = max(d['max_freq'], v)
             topic_word_freq[i] = d
 
-        info_quan_array = np.zeros(data['tid'].nunique()+1, dtype=np.float32)
+        info_quan_array = np.zeros(data['tid'].nunique() + 1, dtype=np.float32)
         for _, row in data.iterrows():
             info_quan = 0
             topic_class = self.thread_lda[row.tid].argmax()
@@ -407,10 +370,49 @@ class FileMaker:
         img_num_array = 1 / (1 + np.exp(-img_num_array)) * 2 - 1
         info_quan_array = 1 / (1 + np.exp(-info_quan_array)) * 2 - 1
 
-        thread_info = np.vstack((text_len_array, img_num_array, info_quan_array)).T
+        thread_stat = np.vstack((text_len_array, img_num_array, info_quan_array)).T
 
-        save_data(thread_info, 'thread_info')
-        return thread_info
+        return thread_stat
+
+    @staticmethod
+    def _thread_user(data):
+        # 初始化
+        thread_cnt = data['tid'].nunique()
+
+        # 发帖者
+        initiator = np.zeros(thread_cnt+1, dtype=np.int32)
+        initiator[-1] = -1       # 空白
+        first_post = data[data['rank'] == 1]
+        initiator[first_post['tid'].to_numpy()] = first_post['uid'].to_numpy()
+
+        # 所有用户
+        participants = dict()
+        for i in data['tid'].drop_duplicates().to_list():
+            participants[i] = []
+        participants[len(participants)] = []    # 空白
+        data_train = data[~data['test_flag']][['tid', 'uid']].drop_duplicates()
+        for tid, df in data_train.groupby('tid'):
+            participants[tid] = df['uid'].to_list()
+
+        thread_user = {
+            'initiator': initiator,
+            'participants': participants,
+        }
+
+        return thread_user
+
+    @staticmethod
+    def _thread_participants_feature(thread_participants, user_lda_dist):
+        """
+        根据帖子参与用户的lda偏好，以lda形式计算帖子的参与者特征
+        :return: m*20的numpy矩阵
+        """
+        feature = np.zeros((len(thread_participants), N_TOPICS)).astype(np.float32)
+        for tid, participants in thread_participants.items():
+            if len(participants) != 0:
+                feature[tid] = user_lda_dist[participants].mean(axis=0)
+
+        return feature
 
     def make_train_test_file(self):
         print('Generating train and test file...')
@@ -443,7 +445,7 @@ class FileMaker:
                 if idx < HISTORY_THREAD_TAKEN_CNT:
                     item['hist_item'] = np.concatenate((
                         item['hist_item'],
-                        np.zeros(HISTORY_THREAD_TAKEN_CNT - item['hist_item'].shape[0]).astype(np.int32)-1
+                        np.zeros(HISTORY_THREAD_TAKEN_CNT - item['hist_item'].shape[0])-1
                     )).astype(np.int32)
                     item['timeDelta'] = np.concatenate((
                         item['timeDelta'],
@@ -468,20 +470,23 @@ class FileMaker:
         return
 
     def make_all_files(self):
+        data = self.load_all_posts()
         self.uid2id, self.tid2id = self.make_id_transfer()
+        data['tid'] = data['tid'].apply(lambda x: self.tid2id[x])
+        data['uid'] = data['uid'].apply(lambda x: self.uid2id[x])
         self.thread_cnt = len(self.tid2id)
         self.user_cnt = len(self.uid2id)
-        self.user_seq = self.make_user_sequence()
+        self.user_seq = self.make_user_sequence(data)
         # self.thread_vector = self.make_thread_BERT_file()
         # self.thread_lda = self.make_thread_LDA_file()
-        self.get_thread_info()
         self.make_train_test_file()
-        self.thread_participants_feature()
-        self.get_social_network()
+        self.make_thread_info_file(data)
+        self.make_user_info_file()
+        self.make_social_network_file()
 
 
 if __name__ == '__main__':
     fileMaker = FileMaker()
     # seq = fileMaker.make_user_sequence()
-    fileMaker.make_all_files()
-    time.sleep(1)
+    fileMaker.make_train_test_file()
+    # time.sleep(1)
