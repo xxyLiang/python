@@ -6,6 +6,7 @@ from bert_serving.client import BertClient
 from sklearn.decomposition import PCA
 from tqdm import tqdm
 from lda import LDA
+from random import sample
 import networkx as nx
 from settings import *
 
@@ -152,12 +153,15 @@ class FileMaker:
             thread_time = data[['tid', 'publish_time']].drop_duplicates(subset=['tid'])
             thread_before_last_activity = thread_time[thread_time['publish_time'] < time_list[-1]]['tid']
             neg_thread = set(thread_before_last_activity) - set(t_list)
+            test_neg_thread = sample(list(neg_thread), 200)
+            train_neg_thread = neg_thread - set(test_neg_thread)
 
             user_seq[uid] = {
                 'thread': t_list,
                 'time': time_list,
                 'test_flag': test_flag,
-                'neg_thread': list(neg_thread)
+                'test_neg_thread': test_neg_thread,
+                'train_neg_thread': list(train_neg_thread)
             }
             pbar.update(1)
 
@@ -188,7 +192,7 @@ class FileMaker:
                     adjacency_matrix[row['uid'], self.uid2id[row['reply_to']]] += 1
         adjacency_matrix[np.diag_indices(self.user_cnt)] = 0
 
-        graph = nx.DiGraph(adjacency_matrix)
+        # graph = nx.DiGraph(adjacency_matrix)
 
         adjacency_matrix = 1 / (1 + np.exp(-adjacency_matrix)) * 2 - 1      # 通过sigmoid转化至（0，1）
 
@@ -426,7 +430,10 @@ class FileMaker:
 
         pbar = tqdm(total=user_cnt)
         for user, seq in self.user_seq.items():
+            user: int
             for idx in range(len(seq['thread'])):
+                if idx <= 1:
+                    continue
                 item = dict()
                 item['user'] = np.array(user).astype(np.int32)
                 item['item_id'] = np.array(seq['thread'][idx]).astype(np.int32)

@@ -9,8 +9,8 @@ from tqdm import tqdm
 import pickle
 
 MAX = float('inf')
-THREAD_CNT_LOW = 20
-THREAD_CNT_HIGH = 100
+THREAD_CNT_LOW = 10
+THREAD_CNT_HIGH = 200
 DEBUG = False
 
 
@@ -501,5 +501,5 @@ if __name__ == '__main__':
     rec = OHCRec()
     rec.run()
     # engage = rec.user_engage_matrix()
-    with open('model.pickle', 'wb') as f:
+    with open(os.path.expanduser("~") + '/Files/OHCRec_data/model.pickle', 'wb') as f:
         pickle.dump((rec.R, rec.y_test), f)
