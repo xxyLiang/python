@@ -2,9 +2,9 @@ import time
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from auxiliary import KEmbedding, UniformEmbedding
-from settings import N_TOPICS, HISTORY_THREAD_TAKEN_CNT, VECTOR_DIM
-import data_loader
+from auxiliary import KEmbedding, UniformEmbedding, EarlyStopping
+from settings import *
+from data_loader import *
 import data_prepare
 from tqdm import tqdm
 
@@ -22,14 +22,14 @@ class PT(nn.Module):
         self.userNum = user_len
         self.params = param
 
+        self.device = 'cpu'
         # if torch.cuda.is_available():
         #     self.device = 'cuda'
-
-        self.device = 'cpu'
 
         self.cossim_1 = nn.CosineSimilarity(dim=1).to(self.device)
         self.cossim_2 = nn.CosineSimilarity(dim=2).to(self.device)
         self.zero_ = torch.tensor(0).to(self.device)
+        self.criterion = nn.LogSoftmax(dim=1)
 
         # 用户的lda/vector偏好特征
         self.know_lda_pref_user = nn.Embedding(user_len, N_TOPICS).to(self.device).to(torch.float64)
@@ -43,18 +43,18 @@ class PT(nn.Module):
         # 总体的时间衰减参数
         self.time_decay_lamda_global = KEmbedding(1, 1, 0.8).to(self.device).to(torch.float64)
         self.time_decay_lamda_global.requires_grad_ = False
-        self.time_decay_lamda_user = UniformEmbedding(user_len, 1, -0.5, 0.5).to(self.device).to(torch.float64)
+        self.time_decay_lamda_user = UniformEmbedding(user_len, 1, -0.1, 0.1).to(self.device).to(torch.float64)
 
         # 信息收益部分
         self.know_info_part_weight_global = KEmbedding(1, 3, 0.33).to(self.device).to(torch.float64)
-        self.know_info_part_weight_user = UniformEmbedding(user_len, 3, -0.1, 0.1).to(self.device).to(torch.float64)
+        self.know_info_part_weight_user = UniformEmbedding(user_len, 3, -0.05, 0.05).to(self.device).to(torch.float64)
 
         self.know_topicSim_weight_global = KEmbedding(1, 1, 0.33).to(self.device).to(torch.float64)
-        self.know_topicSim_weight_user = UniformEmbedding(user_len, 1, -0.2, 0.2).to(self.device).to(torch.float64)
+        self.know_topicSim_weight_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
         self.know_contentSim_weight_global = KEmbedding(1, 1, 0.33).to(self.device).to(torch.float64)
-        self.know_contentSim_weight_user = UniformEmbedding(user_len, 1, -0.2, 0.2).to(self.device).to(torch.float64)
+        self.know_contentSim_weight_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
         self.know_info_weight_user = KEmbedding(1, 1, 0.34).to(self.device).to(torch.float64)
-        self.know_info_weight_user = UniformEmbedding(user_len, 1, -0.2, 0.2).to(self.device).to(torch.float64)
+        self.know_info_weight_user = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
 
         # 社区感部分
         self.com_participant_pref_user = nn.Embedding(user_len, N_TOPICS).to(torch.float64).to(self.device)
@@ -77,7 +77,7 @@ class PT(nn.Module):
         self.x_ref_user = UniformEmbedding(user_len, 1, -0.1, 0.1).to(self.device).to(torch.float64)
 
         self.x_lamda_global = KEmbedding(1, 1, 1.5).to(self.device).to(torch.float64)
-        self.x_lamda_user = UniformEmbedding(user_len, 1, -0.5, 0.5).to(self.device).to(torch.float64)
+        self.x_lamda_user = UniformEmbedding(user_len, 1, -0.3, 0.3).to(self.device).to(torch.float64)
         self.x_alpha_global = KEmbedding(1, 1, 0.6).to(self.device).to(torch.float64)
         self.x_alpha_user = UniformEmbedding(user_len, 1, -0.1, 0.1).to(self.device).to(torch.float64)
         self.x_beta_global = KEmbedding(1, 1, 0.55).to(self.device).to(torch.float64)
@@ -86,10 +86,14 @@ class PT(nn.Module):
         self.x_alpha_global.requires_grad_ = False
         self.x_beta_global.requires_grad_ = False
 
-        self.fc1 = nn.Linear(60, 20, dtype=torch.float64)
-        self.fc1.weight.data.uniform_(-0.2, 0.2)
-        self.fc2 = nn.Linear(20, 1, dtype=torch.float64)
-        self.fc2.weight.data.uniform_(-0.2, 0.2)
+        self.x_bias = UniformEmbedding(user_len, 1, -0.05, 0.05).to(self.device).to(torch.float64)
+
+        self.fc1 = nn.Linear(95, 16, dtype=torch.float64)
+        self.fc1.weight.data.uniform_(-0.1, 0.1)
+        self.fc2 = nn.Linear(16, 1, dtype=torch.float64)
+        self.fc2.weight.data.uniform_(-0.1, 0.1)
+
+        self.relu = nn.ELU()
 
         self.to(self.device)
         self.grads = {}
@@ -102,7 +106,8 @@ class PT(nn.Module):
         curr_item_topic_gain = self.curr_topic_gain(data)  # 当前帖子的收益
 
         cross = torch.mul(gain_lda_diff, curr_item_topic_gain)
-        dot_ = self.fc1(torch.cat([gain_lda_diff, cross, curr_item_topic_gain], dim=1))
+        dot_ = self.fc1(torch.cat([data['user_profile'], gain_lda_diff, cross, curr_item_topic_gain], dim=1))
+        # dot_ = self.relu(dot_)
         dot_ = self.fc2(dot_).view(-1)
         return dot_
 
@@ -198,7 +203,7 @@ class PT(nn.Module):
         v_exp = torch.mul(alpha, x_binary_pos) + torch.mul(beta, x_binary_neg)
         v = x.pow(v_exp)
         v_coef = x_binary_pos - torch.mul(lamda, x_binary_neg)
-        value = torch.mul(v, v_coef)
+        value = torch.mul(v, v_coef) + self.x_bias(user)
 
         return value
 
@@ -208,9 +213,7 @@ class PT(nn.Module):
         neg_out = self.forward(neg_data).reshape(-1, self.params['negNum_train'])
 
         Out = torch.cat((pos_out, neg_out), dim=1)
-
-        criterion = nn.LogSoftmax(dim=1)
-        res = criterion(Out)[:, 0]
+        res = self.criterion(Out)[:, 0]
         loss = torch.mean(res)
         return -loss
 
@@ -230,6 +233,7 @@ class PT(nn.Module):
         neg_data['item_authority'] = data['negItem_authority']
         neg_data['item_participants'] = data['negItem_participants']
         neg_data['item_interact'] = data['negItem_interact']
+        neg_data['user_profile'] = self.__duplicates(data['user_profile'], times=negNum)
         return neg_data
 
     @staticmethod
@@ -252,25 +256,27 @@ class PT(nn.Module):
 
         return hook
 
-    def test_precision(self, testset):
-        print('testing...')
-        pbar = tqdm(total=len(testset.dataset))
+    def test_precision(self, testset, verbose=False):
         total_cnt = 0
         success = 0
+        ndcg = 0
+        negNum = self.params['negNum_test']
         with torch.no_grad():
             for i, batchData in enumerate(testset):
-                score_pos = self.forward(batchData)
-                neg_batch = self.neg_sample(batchData, self.params['negNum_test'])
-                score_neg = self.forward(neg_batch).reshape(-1, self.params['negNum_test'])
-                score_neg_max = score_neg.max(dim=1).values
+                score_pos = self.forward(batchData).view(-1, 1)
+                neg_batch = self.neg_sample(batchData, negNum)
+                score_neg = self.forward(neg_batch).reshape(-1, negNum)
 
-                rs = torch.gt(score_pos, score_neg_max).int()
-
-                success += rs.sum()
+                rs = torch.lt(score_pos, score_neg).int().sum(1)
+                success += rs.eq(0).int().sum()
+                rs = 1 / torch.log2(rs+2)
+                ndcg += rs.sum()
                 total_cnt += len(score_pos)
-                pbar.update(len(score_pos))
-        pbar.close()
-        print('precision = %.2f %%' % (success / total_cnt * 100))
+            p = success / total_cnt
+            ndcg = ndcg/total_cnt
+        if verbose:
+            print('precision = %.4f, NDCG=%.4f' % (p, ndcg))
+        return p, ndcg
 
 
 if __name__ == '__main__':
@@ -280,35 +286,35 @@ if __name__ == '__main__':
         'batch_size': 128,
         'negNum_train': 2,
         'negNum_test': 10,
-        'epoch_limit': 3,
+        'epoch_limit': 8,
     }
+    print('initialization')
+    train = read_data('train_data')
+    validate = read_data('validate_data')
+    user_seq = read_data('user_sequence')
+    user_dist = read_data('user_dist')
 
-    train = data_loader.read_data('train_data')
-    test = data_loader.read_data('test_data')
-    user_seq = data_loader.read_data('user_sequence')
-    user_dist = data_loader.read_data('user_dist')
-    user_lda_dist, user_vector_dist = user_dist['lda_dist'], user_dist['vector_dist']
+    trainSet = UserData(train)
+    trainSet.set_negN((params['negNum_train']))
+    trainLoader = DataLoader(trainSet, batch_size=params['batch_size'], shuffle=True)
 
-    trainset = data_loader.UserData(train)
-    trainset.set_negN(params['negNum_train'])
-    trainLoader = DataLoader(trainset, batch_size=params['batch_size'], shuffle=True)
-    testset = data_loader.UserData(test, test=True)
-    testset.set_negN(params['negNum_test'])
-    testLoader = DataLoader(testset, batch_size=16, shuffle=False)
+    validateSet = UserData(validate, test=True)
+    validateSet.set_negN((params['negNum_test']))
+    validateLoader = DataLoader(validateSet, batch_size=16, shuffle=True)
 
     model = PT(
         user_len=len(user_seq),
         param=params,
-        lda_dist=user_lda_dist,
-        vector_dist=user_vector_dist
+        lda_dist=user_dist['lda_dist'],
+        vector_dist=user_dist['vector_dist']
     )
-    # model = data_prepare.read_data('model')
     model.to(model.device)
-    print('initialization')
+
     optimizer = torch.optim.RMSprop(model.parameters(), lr=params['lr'], weight_decay=params['w_decay'])
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.6)
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.5)
 
     epoch = 0
+    es = EarlyStopping(delta=0.01)
     print('start training...')
     while epoch < params['epoch_limit']:
         epoch += 1
@@ -328,10 +334,17 @@ if __name__ == '__main__':
 
             total_loss += batch_loss.clone()
             pbar.update(batchData['user'].shape[0])
+            if (i+1) % 350 == 0:
+                p, ndcg = model.test_precision(validateLoader)
+                if es(ndcg, model):
+                    exit(0)
         pbar.close()
         scheduler.step()
 
         print('epoch loss', total_loss)
-        model.test_precision(testLoader)
+        p, ndcg = model.test_precision(validateLoader, verbose=True)
+        if es(ndcg, model):
+            exit(0)
 
-    data_prepare.save_data(model, 'model')
+    #     model.test_precision(validateLoader)
+    torch.save(model, prefix+"model.pickle")

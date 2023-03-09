@@ -27,6 +27,7 @@ class BaseData(Dataset):
         in_degree = sn['adjacency_matrix'].T
         interact = sn['interact']
         self.social_network = np.stack((in_degree, interact), axis=2)       # (n, n, 4)
+        self.user_profile = read_data('user_profile')
 
     def __len__(self):
         return self.L
@@ -35,6 +36,7 @@ class BaseData(Dataset):
         item = deepcopy(self.data[idx])
         user = item['user']
         item_id = item['item_id']
+        item['user_profile'] = self.user_profile[user]
         # data中原来就有的key：
         # 'user', 'timeDelta'
         item['item_lda'] = self.thread_lda[item_id]
@@ -59,12 +61,11 @@ class UserData(BaseData):
 
     def __init__(self, data, test=False):
         super().__init__(data)
-        self.test = test
+        self.neg_thread = 'test_neg_thread' if test else 'train_neg_thread'
 
     def __getitem__(self, idx):
         item = super().__getitem__(idx)
-        neg_thread = 'test_neg_thread' if self.test else 'train_neg_thread'
-        neg = sample(self.user_seq[int(item['user'])][neg_thread], k=self.negNum)
+        neg = sample(self.user_seq[int(item['user'])][self.neg_thread], k=self.negNum)
         item['negItem_lda'] = self.thread_lda[neg]
         item['negItem_vector'] = self.thread_vector[neg]
         item['negItem_info'] = self.thread_stat[neg]

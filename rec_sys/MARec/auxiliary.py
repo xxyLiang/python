@@ -1,30 +1,8 @@
-import torch.nn.functional as F
 import torch.nn as nn
 import jieba
 import re
-
-
-def bpr_loss(positive_predictions, negative_predictions, mask=None):
-	loss = (1.0 - F.sigmoid(positive_predictions - negative_predictions))
-	if mask is not None:
-		mask = mask.float()
-		loss = loss * mask
-		return loss.sum() / mask.sum()
-	return loss.mean()
-
-
-class ScaledEmbedding(nn.Embedding):
-	def reset_parameters(self):
-		self.weight.data.normal_(0, 1.0 / self.embedding_dim)
-		if self.padding_idx is not None:
-			self.weight.data[self.padding_idx].fill_(0)
-
-
-class ZeroEmbedding(nn.Embedding):
-	def reset_parameters(self):
-		self.weight.data.zero_()
-		if self.padding_idx is not None:
-			self.weight.data[self.padding_idx].fill_(0)
+from settings import *
+from torch import save
 
 
 class KEmbedding(nn.Embedding):
@@ -44,6 +22,36 @@ class UniformEmbedding(nn.Embedding):
 
 	def reset_parameters(self) -> None:
 		self.weight.data.uniform_(self.low, self.high)
+
+
+class EarlyStopping:
+
+	def __init__(self, patience=5, delta=0.005, path=prefix+"model.pickle", trace_fnc=print, verbose=True):
+		self.patience = patience
+		self.verbose = verbose
+		self.counter = 0
+		self.best_score = None
+		self.delta = delta
+		self.path = path
+		self.trace_func = trace_fnc
+		self.save_model = None
+
+	def __call__(self, score, model):
+		if self.best_score is None or score > self.best_score - self.delta:
+			if self.best_score is None:
+				self.best_score = score
+			else:
+				self.best_score = max(self.best_score, score)
+			self.save_model = model
+			self.counter = 0
+		else:
+			self.counter += 1
+			if self.counter >= self.patience:
+				save(model, self.path)
+				self.trace_func("Early Stop Trigger, best NDCG: %.4f" % self.best_score)
+				return True
+
+		return False
 
 
 class CutWord:

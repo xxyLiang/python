@@ -1,3 +1,6 @@
+import datetime
+import random
+
 import pandas as pd
 import numpy as np
 import pickle
@@ -108,7 +111,7 @@ class FileMaker:
         test_data_idx = list()
         for uid, df in data.groupby('uid'):
             engage_thread = df['tid'].drop_duplicates()
-            test_cnt = math.ceil(engage_thread.shape[0] / 10)
+            test_cnt = math.ceil(engage_thread.shape[0] / 5 - 0.8)
             test_data_idx.extend(df[df['tid'].isin(engage_thread.iloc[-test_cnt:])].index.to_list())
         data.loc[test_data_idx, 'test_flag'] = True
         return
@@ -244,6 +247,43 @@ class FileMaker:
 
         save_data(feature, 'user_info')
         return feature
+
+    def make_user_profile_file(self):
+        cursor.execute("select * from user_list where thread_cnt BETWEEN %d AND %d" % (THREAD_CNT_LOW, THREAD_CNT_HIGH))
+        data = pd.DataFrame(
+            cursor.fetchall(),
+            columns=['uid', 'thread_cnt', 'post_cnt', 'level', 'user_group', 'total_online_hours', 'regis_time',
+                     'latest_login_time', 'latest_active_time', 'latest_pub_time', 'prestige', 'points',
+                     'wealth', 'visitors', 'friends', 'records', 'logs', 'albums', 'total_posts', 'total_threads',
+                     'shares', 'diabetes_type', 'treatment_type', 'gender', 'birthdate', 'habitation']
+        )
+        data = data[['uid', 'level', 'user_group', 'prestige', 'points',
+                     'wealth', 'visitors', 'friends', 'records', 'logs', 'albums',
+                     'shares', 'diabetes_type', 'gender', 'birthdate']]
+        data['uid'] = data['uid'].apply(lambda x: self.uid2id[x])
+        data = data.set_index(keys='uid', drop=True).sort_index()
+        data['birthdate'].fillna(datetime.date(1900, 1, 1), inplace=True)
+        data['birthdate'] = data['birthdate'].apply(lambda x: math.floor(x.year / 10))
+        data.fillna(0, inplace=True)
+
+        numeric_attrs = ['prestige', 'points', 'wealth', 'visitors', 'friends',
+                         'records', 'logs', 'albums', 'shares']
+        nominal_attrs = ['level', 'user_group']
+        other_attrs = ['diabetes_type', 'gender', 'birthdate']
+        for col in numeric_attrs:
+            data[col] = data[col].apply(lambda x: np.log10(x + 1) if x >= 0 else 0)
+            data[col] /= data[col].max()
+        for col in nominal_attrs:
+            data[col] = (data[col] - data[col].min()) / (data[col].max() - data[col].min())
+        for col in other_attrs:
+            col_values = data[col].drop_duplicates().to_list()
+            for k, v in enumerate(col_values):
+                data[col + "_" + str(k)] = data[col].eq(v).astype(int)
+        data.drop(columns=other_attrs, inplace=True)
+
+        data = data.to_numpy()
+        save_data(data, 'user_profile')
+        return data
 
     def make_thread_LDA_file(self):
         lda = LDA()
@@ -423,6 +463,7 @@ class FileMaker:
 
         user_cnt = len(self.user_seq.keys())
         train_data = list()
+        validate_data = list()
         test_data = list()
 
         user_lda_dist = np.zeros((user_cnt, N_TOPICS), dtype=np.float32)
@@ -461,7 +502,10 @@ class FileMaker:
                 # more features here
 
                 if seq['test_flag'][idx]:
-                    test_data.append(item)
+                    if random.random() >0.5:
+                        test_data.append(item)
+                    else:
+                        validate_data.append(item)
                 else:
                     train_data.append(item)
 
@@ -471,6 +515,7 @@ class FileMaker:
         pbar.close()
 
         save_data(train_data, 'train_data')
+        save_data(validate_data, 'validate_data')
         save_data(test_data, 'test_data')
         save_data({'lda_dist': user_lda_dist, 'vector_dist': user_vector_dist}, 'user_dist')
 
@@ -489,11 +534,12 @@ class FileMaker:
         self.make_train_test_file()
         self.make_thread_info_file(data)
         self.make_user_info_file()
+        self.make_user_profile_file()
         self.make_social_network_file()
 
 
 if __name__ == '__main__':
     fileMaker = FileMaker()
     # seq = fileMaker.make_user_sequence()
-    fileMaker.make_train_test_file()
+    fileMaker.make_all_files()
     # time.sleep(1)
